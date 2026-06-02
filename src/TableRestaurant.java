@@ -24,6 +24,14 @@ public class TableRestaurant {
                 '}';
     }
 
+    public String toJson() {
+        return "{"
+                + "\"id\":" + id + ","
+                + "\"capacite\":" + capacite + ","
+                + "\"restaurantId\":" + (restaurant != null ? restaurant.getId() : null)
+                + "}";
+    }
+
     public int getId() {
         return id;
     }

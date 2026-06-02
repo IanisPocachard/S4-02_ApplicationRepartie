@@ -45,6 +45,19 @@ public class Reservation {
                 '}';
     }
 
+    public String toJson() {
+        return "{"
+                + "\"id\":" + id + ","
+                + "\"nomClient\":\"" + nomClient + "\","
+                + "\"prenomClient\":\"" + prenomClient + "\","
+                + "\"telephone\":\"" + numeroTelephone + "\","
+                + "\"nbPersonnes\":" + nbPersonnes + ","
+                + "\"restaurant\":\"" + (restaurant != null ? restaurant.getNom() : null) + "\","
+                + "\"tableId\":" + (tableRestaurant != null ? tableRestaurant.getId() : null) + ","
+                + "\"date\":\"" + date + "\""
+                + "}";
+    }
+
     public int getId() {
         return id;
     }

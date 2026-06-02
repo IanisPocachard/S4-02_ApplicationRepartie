@@ -32,6 +32,16 @@ public class Restaurant {
                 '}';
     }
 
+    public String toJson() {
+        return "{"
+                + "\"id\":" + id + ","
+                + "\"nom\":\"" + nom + "\","
+                + "\"adresse\":\"" + adresse + "\","
+                + "\"latitude\":" + latitude + ","
+                + "\"longitude\":" + longitude
+                + "}";
+    }
+
     public int getId() {
         return id;
     }
