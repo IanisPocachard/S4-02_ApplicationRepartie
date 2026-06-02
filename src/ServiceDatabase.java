@@ -4,9 +4,9 @@ import java.util.HashMap;
 
 public interface ServiceDatabase {
 
-    public ArrayList<HashMap<Double, Double>> getCoordonneesRestaurants();
+    public String getCoordonneesRestaurants();
 
-    public Reservation reserverTable(
+    public String reserverTable(
         Restaurant restaurant,
         LocalDateTime date,
         int nbPersonnes,

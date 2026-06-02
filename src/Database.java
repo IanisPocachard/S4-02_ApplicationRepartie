@@ -42,18 +42,29 @@ public class Database implements ServiceDatabase {
     }
 
     @Override
-    public ArrayList<HashMap<Double, Double>> getCoordonneesRestaurants() {
-        ArrayList<HashMap<Double, Double>> coordonneesRestaurants = new ArrayList<>();
-        for (Restaurant r : Restaurant.readAll()) {
-            HashMap<Double, Double> coordonnees = new HashMap<>();
-            coordonnees.put(r.getLatitude(), r.getLongitude());
-            coordonneesRestaurants.add(coordonnees);
+    public String getCoordonneesRestaurants() {
+
+        ArrayList<Restaurant> restaurants = Restaurant.readAll();
+
+        StringBuilder json = new StringBuilder();
+        json.append("[");
+
+        for (int i = 0; i < restaurants.size(); i++) {
+
+            json.append(restaurants.get(i).toJson());
+
+            if (i < restaurants.size() - 1) {
+                json.append(",");
+            }
         }
-        return coordonneesRestaurants;
+
+        json.append("]");
+
+        return json.toString();
     }
 
     @Override
-    public Reservation reserverTable(
+    public String reserverTable(
             Restaurant restaurant,
             LocalDateTime date,
             int nbPersonnes,
@@ -84,11 +95,18 @@ public class Database implements ServiceDatabase {
 
                 Reservation.create(r, table.getId());
 
-                return r;
+                return "{"
+                        + "\"status\":\"success\","
+                        + "\"reservation\":"
+                        + r.toJson()
+                        + "}";
             }
         }
 
-        return null;
+        return "{"
+                + "\"status\":\"error\","
+                + "\"message\":\"no_table_available\""
+                + "}";
     }
 
 }
