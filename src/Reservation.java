@@ -3,7 +3,7 @@ import java.util.Date;
 public class Reservation {
 
     private int id;
-    private String nom_client, prenom_client, numero_telephone;
+    private String nomClient, prenomClient, numeroTelephone;
     private int nbPersonnes;
     private Restaurant restaurant;
     private Date date;
@@ -16,28 +16,28 @@ public class Reservation {
         this.id = id;
     }
 
-    public String getNom_client() {
-        return nom_client;
+    public String getNomClient() {
+        return nomClient;
     }
 
-    public void setNom_client(String nom_client) {
-        this.nom_client = nom_client;
+    public void setNomClient(String nomClient) {
+        this.nomClient = nomClient;
     }
 
-    public String getPrenom_client() {
-        return prenom_client;
+    public String getPrenomClient() {
+        return prenomClient;
     }
 
-    public void setPrenom_client(String prenom_client) {
-        this.prenom_client = prenom_client;
+    public void setPrenomClient(String prenomClient) {
+        this.prenomClient = prenomClient;
     }
 
-    public String getNumero_telephone() {
-        return numero_telephone;
+    public String getNumeroTelephone() {
+        return numeroTelephone;
     }
 
-    public void setNumero_telephone(String numero_telephone) {
-        this.numero_telephone = numero_telephone;
+    public void setNumeroTelephone(String numeroTelephone) {
+        this.numeroTelephone = numeroTelephone;
     }
 
     public int getNbPersonnes() {
