@@ -1,3 +1,5 @@
+import java.sql.*;
+
 public class Restaurant {
 
     private int id;
@@ -56,5 +58,38 @@ public class Restaurant {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public static Restaurant read(int id) {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = "SELECT id, nom, adresse, latitude, longitude FROM Restaurant WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+
+            try (ResultSet rs = statement.executeQuery()) {
+
+                if (rs.next()) {
+                    return new Restaurant(
+                        rs.getInt("id"),
+                        rs.getString("nom"),
+                        rs.getString("adresse"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude")
+                    );
+                }
+
+                return null; // no restaurant found
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

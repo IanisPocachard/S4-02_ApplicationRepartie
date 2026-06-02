@@ -8,6 +8,24 @@ public class Reservation {
     private Restaurant restaurant;
     private Date date;
 
+    public Reservation(
+            int id,
+            String nomClient,
+            String prenomClient,
+            String numeroTelephone,
+            int nbPersonnes,
+            int idRestaurant,
+            Date date
+    ) {
+        this.id = id;
+        this.nomClient = nomClient;
+        this.prenomClient = prenomClient;
+        this.numeroTelephone = numeroTelephone;
+        this.nbPersonnes = nbPersonnes;
+        this.restaurant = Restaurant.read(idRestaurant);
+        this.date = date;
+    }
+
     public int getId() {
         return id;
     }
