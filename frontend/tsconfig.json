@@ -5,12 +5,12 @@
  "moduleResolution": "bundler",
  "forceConsistentCasingInFileNames": true,
  "strict": true,
- "rootDir": "ts",
+ "rootDir": "./typescript",
  "outDir": "./dist",
  "noEmitOnError": true
  },
  "include": [
-  "typescript/**/*.ts"
+    "typescript/**/*.ts",
  ],
  "exclude": [
   "dist",
