@@ -1,0 +1,19 @@
+{
+ "compilerOptions": {
+ "target": "esnext",
+ "module": "esnext",
+ "moduleResolution": "bundler",
+ "forceConsistentCasingInFileNames": true,
+ "strict": true,
+ "rootDir": "ts",
+ "outDir": "./dist",
+ "noEmitOnError": true
+ },
+ "include": [
+  "typescript/**/*.ts"
+ ],
+ "exclude": [
+  "dist",
+  "node_modules"
+ ]
+}
