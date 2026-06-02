@@ -21,13 +21,13 @@ public class Proxy implements InterfaceProxy {
      this.lancerAnnuaire();
   }
   
-  public setIncidents(InterfaceIncidents incidents) {
+  public void setIncidents(InterfaceIncidents incidents) {
     this.incidents = incidents;
     this.isIncidentsReady = true;
     if (this.isRestaurantsReady) this.lancerServeurHttp();
   }
   
-  public setRestaurants(InterfaceRestaurants restaurants) {
+  public void setRestaurants(InterfaceRestaurants restaurants) {
     this.restaurants = restaurants;
     this.isRestaurantsReady = true;
     if (this.isIncidentsReady) this.lancerServeurHttp();
@@ -43,7 +43,7 @@ public class Proxy implements InterfaceProxy {
   
   public void lancerServeurHttp () {
 		
-		HttpServeur server = HttpServer.create(new InetSocketAdress(8080), 0)// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
+		HttpServeur server = HttpServer.create(new InetSocketAdress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
 		server.createContext("/", new ProxyHandler()); //configuration du handler pour le chemin "/" (home)
 		server.setExecutor(null); //pas d'objet Executor pour le proxy  --> Executor : remplace la création de Thread explicite (executor.execute(new RunnableTask()); | new Thread(new RunnableTask()).start();)
 		

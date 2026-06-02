@@ -3,6 +3,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
 
 public interface InterfaceProxy extends Remote{
-   public setIncidents(InterfaceIncidents incidents);
-   public setRestaurants(InterfaceRestaurants restaurants);
+   public void setIncidents(InterfaceIncidents incidents);
+   public void setRestaurants(InterfaceRestaurants restaurants);
 }
