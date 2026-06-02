@@ -18,6 +18,7 @@ public class Proxy implements InterfaceProxy {
   public Proxy() {
      this.isIncidentsReady = false;
      this.isRestaurantReady = false;
+     this.lancerAnnuaire();
   }
   
   public setIncidents(InterfaceIncidents incidents) {
@@ -37,7 +38,7 @@ public class Proxy implements InterfaceProxy {
 		InterfaceProxy proxy = (InterfaceProxy) UnicastRemoteObject.exportObject(proxy, 0);
 
 		Registry reg = LocateRegistry.createRegistry(1099);
-		reg.rebind("proxy", i);
+		reg.rebind("proxy", proxy);
   }
   
   public void lancerServeurHttp () {
