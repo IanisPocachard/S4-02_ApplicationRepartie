@@ -1,15 +1,15 @@
-export interface GbfsIndexResponse {
+export interface VeloApiIndexResponse {
 	last_updated: number;
 	ttl: number;
 	version: string;
 	data: {
 		fr: {
-			feeds: GbfsFeed[];
+			feeds: VeloApiFeed[];
 		};
 	};
 }
 
-export interface GbfsFeed {
+export interface VeloApiFeed {
 	name: string;
 	url: string;
 }

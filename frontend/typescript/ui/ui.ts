@@ -1,11 +1,16 @@
-import { initMap } from "../map/map";
+import { initMap, addStationMarkers } from "../map/map";
+import { fetchStationInformation } from "../http/velostanlib_api";
 
-export function renderApp(): void {
+export async function renderApp(): Promise<void> {
 	const mapContainer = document.querySelector<HTMLElement>("#map");
 
 	if (!mapContainer) {
 		return;
 	}
 
-	initMap(mapContainer);
+	const map = initMap(mapContainer);
+	const stationInformationResponse = await fetchStationInformation();
+
+	addStationMarkers(map, stationInformationResponse.data.stations);
+
 }
