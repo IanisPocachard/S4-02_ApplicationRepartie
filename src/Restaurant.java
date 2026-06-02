@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Restaurant {
 
@@ -18,6 +19,17 @@ public class Restaurant {
         this.adresse = adresse;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    @Override
+    public String toString() {
+        return "Restaurant{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 
     public int getId() {
@@ -85,6 +97,37 @@ public class Restaurant {
                 }
 
                 return null; // no restaurant found
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static ArrayList<Restaurant> readAll() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = "SELECT id, nom, adresse, latitude, longitude FROM Restaurant";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            try (ResultSet rs = statement.executeQuery()) {
+                ArrayList<Restaurant> restaurants = new ArrayList<>();
+                while (rs.next()) {
+                    restaurants.add(new Restaurant(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            rs.getString("adresse"),
+                            rs.getDouble("latitude"),
+                            rs.getDouble("longitude")
+                    ));
+                }
+
+                return restaurants;
             }
 
         } catch (SQLException e) {
