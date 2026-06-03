@@ -12,5 +12,5 @@ public class Credentials {
 - Créer et enrichir la base de données grâce au fichier `database.sql`
 
 - Utiliser Maven pour compiler et lancer le projet :
-    - `mvn clean compile` : compilation du projet
-    - `mvn exec:java` : lance la classe de test Client
+  - `mvn clean compile` : compilation du projet
+  - `mvn exec:java` : lance la classe de test Client
