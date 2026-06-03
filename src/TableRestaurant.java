@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,12 +26,21 @@ public class TableRestaurant {
                 '}';
     }
 
-    public String toJson() {
-        return "{"
-                + "\"id\":" + id + ","
-                + "\"capacite\":" + capacite + ","
-                + "\"restaurantId\":" + (restaurant != null ? restaurant.getId() : null)
-                + "}";
+
+    public JSONObject toJson() {
+
+        JSONObject json = new JSONObject();
+
+        json.put("id", id);
+        json.put("capacite", capacite);
+
+        if (restaurant != null) {
+            json.put("restaurant", restaurant.toJson());
+        } else {
+            json.put("restaurant", JSONObject.NULL);
+        }
+
+        return json;
     }
 
     public int getId() {

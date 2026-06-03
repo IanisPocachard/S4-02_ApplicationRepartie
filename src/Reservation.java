@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -45,17 +47,30 @@ public class Reservation {
                 '}';
     }
 
-    public String toJson() {
-        return "{"
-                + "\"id\":" + id + ","
-                + "\"nomClient\":\"" + nomClient + "\","
-                + "\"prenomClient\":\"" + prenomClient + "\","
-                + "\"telephone\":\"" + numeroTelephone + "\","
-                + "\"nbPersonnes\":" + nbPersonnes + ","
-                + "\"restaurant\":\"" + (restaurant != null ? restaurant.getNom() : null) + "\","
-                + "\"tableId\":" + (tableRestaurant != null ? tableRestaurant.getId() : null) + ","
-                + "\"date\":\"" + date + "\""
-                + "}";
+    public JSONObject toJson() {
+
+        JSONObject json = new JSONObject();
+
+        json.put("id", id);
+        json.put("nomClient", nomClient);
+        json.put("prenomClient", prenomClient);
+        json.put("numeroTelephone", numeroTelephone);
+        json.put("nbPersonnes", nbPersonnes);
+        json.put("date", date.toString());
+
+        if (restaurant != null) {
+            json.put("restaurant", restaurant.toJson());
+        } else {
+            json.put("restaurant", JSONObject.NULL);
+        }
+
+        if (tableRestaurant != null) {
+            json.put("tableRestaurant", tableRestaurant.toJson());
+        } else {
+            json.put("tableRestaurant", JSONObject.NULL);
+        }
+
+        return json;
     }
 
     public int getId() {

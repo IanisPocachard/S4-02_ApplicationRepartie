@@ -1,3 +1,5 @@
+import org.json.JSONObject;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -32,14 +34,17 @@ public class Restaurant {
                 '}';
     }
 
-    public String toJson() {
-        return "{"
-                + "\"id\":" + id + ","
-                + "\"nom\":\"" + nom + "\","
-                + "\"adresse\":\"" + adresse + "\","
-                + "\"latitude\":" + latitude + ","
-                + "\"longitude\":" + longitude
-                + "}";
+    public JSONObject toJson() {
+
+        JSONObject json = new JSONObject();
+
+        json.put("id", id);
+        json.put("nom", nom);
+        json.put("adresse", adresse);
+        json.put("latitude", latitude);
+        json.put("longitude", longitude);
+
+        return json;
     }
 
     public int getId() {
