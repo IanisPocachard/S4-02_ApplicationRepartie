@@ -3,7 +3,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class Database implements ServiceDatabase {
 
@@ -46,21 +47,13 @@ public class Database implements ServiceDatabase {
 
         ArrayList<Restaurant> restaurants = Restaurant.readAll();
 
-        StringBuilder json = new StringBuilder();
-        json.append("[");
+        JSONArray jsonArray = new JSONArray();
 
-        for (int i = 0; i < restaurants.size(); i++) {
-
-            json.append(restaurants.get(i).toJson());
-
-            if (i < restaurants.size() - 1) {
-                json.append(",");
-            }
+        for (Restaurant restaurant : restaurants) {
+            jsonArray.put(new JSONObject(restaurant.toJson()));
         }
 
-        json.append("]");
-
-        return json.toString();
+        return jsonArray.toString();
     }
 
     @Override
@@ -95,18 +88,19 @@ public class Database implements ServiceDatabase {
 
                 Reservation.create(r, table.getId());
 
-                return "{"
-                        + "\"status\":\"success\","
-                        + "\"reservation\":"
-                        + r.toJson()
-                        + "}";
+                JSONObject response = new JSONObject();
+                response.put("status", "success");
+                response.put("reservation", new JSONObject(r.toJson()));
+
+                return response.toString();
             }
         }
 
-        return "{"
-                + "\"status\":\"error\","
-                + "\"message\":\"no_table_available\""
-                + "}";
+        JSONObject response = new JSONObject();
+        response.put("status", "error");
+        response.put("message", "no_table_available");
+
+        return response.toString();
     }
 
 }
