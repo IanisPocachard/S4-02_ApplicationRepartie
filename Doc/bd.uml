@@ -1,0 +1,32 @@
+@startuml
+
+class Restaurant {
+  id : NUMBER <<PK>>
+  nom : VARCHAR2(30)
+  adresse : VARCHAR2(50)
+  latitude : NUMBER(8,6)
+  longitude : NUMBER(9,6)
+}
+
+class TableRestaurant {
+  id : NUMBER <<PK>>
+  capacite : NUMBER(2)
+  id_restaurant : NUMBER <<FK>>
+}
+
+class Reservation {
+  id : NUMBER <<PK>>
+  nom_client : VARCHAR2(20)
+  prenom_client : VARCHAR2(20)
+  numero_telephone : VARCHAR2(20)
+  nb_personnes : NUMBER(2)
+  id_restaurant : NUMBER <<FK>>
+  id_tableRestaurant : NUMBER <<FK>>
+  date_reservation : TIMESTAMP()
+}
+
+Restaurant "1" -- "0..*" TableRestaurant : possède
+Restaurant "1" -- "0..*" Reservation : reçoit
+TableRestaurant "1" -- "0..*" Reservation : est réservée par
+
+@enduml
