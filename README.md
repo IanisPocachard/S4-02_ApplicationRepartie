@@ -9,4 +9,4 @@ public class Credentials {
 }
 ```
 
-- En fonction de votre IDE, importer la librairie `lib/ojdbc11.jar`.
+- En fonction de votre IDE, importer les librairies `lib/ojdbc11.jar` et `lib/json-20131018.jar`.
