@@ -1,5 +1,5 @@
-import java.net.http.Http;
-import java.net.InetSocketAdress;
+import com.sum.net.httpserver.HttpServer;
+import java.net.InetSocketAddress;
 
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
@@ -43,7 +43,7 @@ public class Proxy implements InterfaceProxy {
   
   public void lancerServeurHttp () {
 		try {
-      HttpServeur server = HttpServer.create(new InetSocketAdress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
+      HttpServeur server = HttpServer.create(new InetSocketAddress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
       server.createContext("/", new ProxyHandler()); //configuration du handler pour le chemin "/" (home)
       server.setExecutor(null); //pas d'objet Executor pour le proxy  --> Executor : remplace la création de Thread explicite (executor.execute(new RunnableTask()); | new Thread(new RunnableTask()).start();)
       
