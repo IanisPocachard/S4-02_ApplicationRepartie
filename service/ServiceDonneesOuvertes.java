@@ -17,7 +17,7 @@ import java.time.Duration;
 
 public class ServiceDonneesOuvertes extends UnicastRemoteObject implements InterfaceProxy {
 
-    private static final String URL = "https://carto.g-ny.org/data/cifs/cifs_waze_v2.json";
+    private static final String URL = "https://carto.g-ny.eu/data/cifs/cifs_waze_v2.json";
 
     public ServiceDonneesOuvertes() throws RemoteException {
         super();
