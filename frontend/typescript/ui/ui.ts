@@ -3,14 +3,12 @@ import { initMap } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 
-// couleur des icones en fonction de nombre de velos disponioble
 function couleur(velos: number): string {
 	if (velos === 0) return "#ef4444";
 	if (velos <= 3) return "#f59e0b";
 	return "#22c55e";
 }
 
-// les icones
 function icone(velos: number): L.DivIcon {
 	return L.divIcon({
 		className: "",
@@ -20,11 +18,9 @@ function icone(velos: number): L.DivIcon {
 	});
 }
 
-// contenu du pop up
 function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | undefined): string {
 	const velos = statut?.num_bikes_available ?? "?";
 	const places = statut?.num_docks_available ?? "?";
-
 	return `
 		<strong>${info.name}</strong><br>
 		${info.address}<br>
@@ -34,18 +30,19 @@ function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | 
 	`;
 }
 
-// la liste des stations avec le nombre de velos dispo
-function afficherListe(stations: VeloStationInformation[], statuts: Map<string, VeloStationStatus>, marqueurs: Map<string, L.Marker>, carte: L.Map, filtre = "" ): void {
+function filtre(statut: VeloStationStatus): boolean {
+	return statut.num_bikes_available === 0 && statut.num_docks_available === 0;
+}
+
+function afficherListe(stations: VeloStationInformation[], statuts: Map<string, VeloStationStatus>, marqueurs: Map<string, L.Marker>, carte: L.Map): void {
 	const liste = document.getElementById("station-list")!;
-	const stationsFiltrees = filtre
-		? stations.filter(s => s.name.toLowerCase().includes(filtre.toLowerCase()))
-		: stations;
-
 	liste.innerHTML = "";
-	for (const station of stationsFiltrees) {
-		const statut = statuts.get(station.station_id);
-		const velos = statut?.num_bikes_available ?? 0;
 
+	for (const station of stations) {
+		const statut = statuts.get(station.station_id);
+		if (statut && filtre(statut)) continue;
+
+		const velos = statut?.num_bikes_available ?? 0;
 		const element = document.createElement("div");
 		element.className = "station-item";
 		element.innerHTML = `
@@ -64,12 +61,10 @@ function afficherListe(stations: VeloStationInformation[], statuts: Map<string, 
 	}
 }
 
-//
 export async function renderApp(): Promise<void> {
 	const conteneurCarte = document.querySelector<HTMLElement>("#map");
 	if (!conteneurCarte) return;
 
-	// on fait les methodes sur un tableau, all pour faire sur toutes les valeurs
 	const [infoRes, statutRes] = await Promise.all([
 		fetchStationInformation(),
 		fetchStationStatus(),
@@ -80,27 +75,13 @@ export async function renderApp(): Promise<void> {
 		statutRes.data.stations.map(s => [s.station_id, s])
 	);
 
-	// Statistiques
-	let totalVelos = 0, totalPlaces = 0, stationsVides = 0;
-	for (const station of stations) {
-		const statut = statuts.get(station.station_id);
-		if (statut) {
-			totalVelos += statut.num_bikes_available;
-			totalPlaces += statut.num_docks_available;
-			if (statut.num_bikes_available === 0) stationsVides++;
-		}
-	}
-	document.getElementById("stat-stations")!.textContent = String(stations.length);
-	document.getElementById("stat-bikes")!.textContent = String(totalVelos);
-	document.getElementById("stat-docks")!.textContent = String(totalPlaces);
-	document.getElementById("stat-empty")!.textContent = String(stationsVides);
-
-	// Carte
 	const carte = initMap(conteneurCarte) as L.Map;
 	const marqueurs = new Map<string, L.Marker>();
 
 	for (const station of stations) {
 		const statut = statuts.get(station.station_id);
+		if (statut && filtre(statut)) continue;
+
 		const velos = statut?.num_bikes_available ?? 0;
 		const marqueur = L.marker([station.lat, station.lon], { icon: icone(velos) })
 			.addTo(carte)
@@ -108,9 +89,5 @@ export async function renderApp(): Promise<void> {
 		marqueurs.set(station.station_id, marqueur);
 	}
 
-	// Recherche 
 	afficherListe(stations, statuts, marqueurs, carte);
-	document.getElementById("search")?.addEventListener("input", e => {
-		afficherListe(stations, statuts, marqueurs, carte, (e.target as HTMLInputElement).value);
-	});
 }
