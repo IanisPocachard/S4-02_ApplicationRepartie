@@ -66,41 +66,74 @@ public class Database implements ServiceDatabase {
             String telephone
     ) {
 
-        ArrayList<TableRestaurant> tables =
-                TableRestaurant.getTablesByRestaurant(restaurant, nbPersonnes);
+        Connection connection =
+                Database.getInstance(Credentials.USERNAME, Credentials.PASSWORD)
+                        .getConnection();
 
-        for (TableRestaurant table : tables) {
+        try {
 
-            if (Reservation.isTableAvailable(table.getId(), date)) {
+            // début transaction
+            connection.setAutoCommit(false);
 
-                int id = (int) (System.currentTimeMillis() % 1_000_000);
+            ArrayList<TableRestaurant> tables =
+                    TableRestaurant.getTablesByRestaurant(restaurant, nbPersonnes);
 
-                Reservation r = new Reservation(
-                        id,
-                        nom,
-                        prenom,
-                        telephone,
-                        nbPersonnes,
-                        restaurant.getId(),
-                        table.getId(),
-                        date
-                );
+            for (TableRestaurant t : tables) {
 
-                Reservation.create(r, table.getId());
+                // verrou physique de la ligne
+                TableRestaurant locked =
+                        TableRestaurant.lockById(connection, t.getId());
 
-                JSONObject response = new JSONObject();
-                response.put("status", "success");
-                response.put("reservation", new JSONObject(r.toJson()));
+                if (locked == null) continue;
 
-                return response.toString();
+                // check disponibilité dans la transaction
+                if (Reservation.isTableAvailable(connection, locked.getId(), date)) {
+
+                    int id = (int) (System.currentTimeMillis() % 1_000_000);
+
+                    Reservation r = new Reservation(
+                            id,
+                            nom,
+                            prenom,
+                            telephone,
+                            nbPersonnes,
+                            restaurant.getId(),
+                            locked.getId(),
+                            date
+                    );
+
+                    Reservation.create(r, locked.getId());
+
+                    connection.commit();
+
+                    JSONObject response = new JSONObject();
+                    response.put("status", "success");
+                    response.put("reservation", r.toJson());
+
+                    return response.toString();
+                }
             }
+
+            connection.rollback();
+
+            JSONObject error = new JSONObject();
+            error.put("status", "error");
+            error.put("message", "no_table_available");
+
+            return error.toString();
+
+        } catch (Exception e) {
+
+            try {
+                connection.rollback();
+            } catch (Exception ignored) {}
+
+            JSONObject error = new JSONObject();
+            error.put("status", "error");
+            error.put("message", e.getMessage());
+
+            return error.toString();
         }
-
-        JSONObject response = new JSONObject();
-        response.put("status", "error");
-        response.put("message", "no_table_available");
-
-        return response.toString();
     }
 
 }

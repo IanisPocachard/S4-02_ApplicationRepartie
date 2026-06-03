@@ -142,4 +142,32 @@ public class TableRestaurant {
     public static ArrayList<TableRestaurant> getTablesByRestaurant(Restaurant restaurant) {
         return getTablesByRestaurant(restaurant, Integer.MAX_VALUE);
     }
+
+    public static TableRestaurant lockById(Connection connection, int id) throws SQLException {
+
+        String sql = """
+        SELECT id, capacite, id_restaurant
+        FROM TableRestaurant
+        WHERE id = ?
+        FOR UPDATE
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    return new TableRestaurant(
+                            rs.getInt("id"),
+                            rs.getInt("capacite"),
+                            rs.getInt("id_restaurant")
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
 }

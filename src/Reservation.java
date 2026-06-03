@@ -171,29 +171,25 @@ public class Reservation {
         }
     }
 
-    public static boolean isTableAvailable(int tableId, LocalDateTime date) {
+    public static boolean isTableAvailable(Connection connection, int tableId, LocalDateTime date)
+            throws SQLException {
 
-        Connection connection = Database.getInstance(
-                Credentials.USERNAME,
-                Credentials.PASSWORD
-        ).getConnection();
+        String sql = """
+            SELECT COUNT(*) AS cnt
+            FROM Reservation
+            WHERE id_tableRestaurant = ?
+            AND date_reservation = ?
+    """;
 
-        String sql =
-                "SELECT COUNT(*) FROM Reservation " +
-                        "WHERE id_tableRestaurant = ? AND date_reservation = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
 
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            ps.setInt(1, tableId);
+            ps.setTimestamp(2, java.sql.Timestamp.valueOf(date));
 
-            stmt.setInt(1, tableId);
-            stmt.setTimestamp(2, Timestamp.valueOf(date));
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next() && rs.getInt(1) == 0;
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt("cnt") == 0;
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
 }
