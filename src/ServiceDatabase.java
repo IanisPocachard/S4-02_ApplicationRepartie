@@ -1,10 +1,10 @@
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-public interface ServiceDatabase {
+public interface ServiceDatabase extends Remote {
 
-    public String getCoordonneesRestaurants();
+    public String getCoordonneesRestaurants() throws RemoteException;
 
     public String reserverTable(
         Restaurant restaurant,
@@ -13,6 +13,6 @@ public interface ServiceDatabase {
         String nom,
         String prenom,
         String telephone
-    );
+    ) throws RemoteException;
 
 }
