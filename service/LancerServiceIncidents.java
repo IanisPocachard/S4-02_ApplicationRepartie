@@ -12,13 +12,13 @@ public class LancerServiceIncidents {
             // Enregistrement dans le registre RMI, pour le moment on ne spécifie pas de nom pour le service, on le fera plus tard donc sans paramètre ça va chercher sur localhost et sur le port par défaut 1099
             Registry registry = LocateRegistry.getRegistry();
 
-            InterfaxeProxy serviceProxyDistant = (InterfaxeProxy) registry.lookup("proxy");
+            InterfaceProxy serviceProxyDistant = (InterfaceProxy) registry.lookup("proxy");
 
             // exportation de l'objet service pour le rendre accessible à distance
             Object rd = (InterfaceIncidents) UnicastRemoteObject.exportObject(service, 0);
 
 
-            serviceProxyDistant.setIncidents(rd);
+            serviceProxyDistant.setIncidents(service); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
             
         } catch (RemoteException e) {
             System.err.println("Erreur RMI : " + e.getMessage());
