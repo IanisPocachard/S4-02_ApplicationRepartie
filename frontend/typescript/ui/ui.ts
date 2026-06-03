@@ -3,12 +3,14 @@ import { initMap } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 
+// couleur des icones en fonction de nombre de velos disponioble
 function couleur(velos: number): string {
 	if (velos === 0) return "#ef4444";
 	if (velos <= 3) return "#f59e0b";
 	return "#22c55e";
 }
 
+// les icones
 function icone(velos: number): L.DivIcon {
 	return L.divIcon({
 		className: "",
@@ -18,29 +20,22 @@ function icone(velos: number): L.DivIcon {
 	});
 }
 
+// contenu du pop up
 function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | undefined): string {
 	const velos = statut?.num_bikes_available ?? "?";
 	const places = statut?.num_docks_available ?? "?";
-	const heure = statut
-		? new Date(statut.last_reported * 1000).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
-		: "—";
+
 	return `
 		<strong>${info.name}</strong><br>
 		${info.address}<br>
 		Vélos disponibles : <b>${velos}</b><br>
 		Places libres : <b>${places}</b><br>
 		Capacité : ${info.capacity}<br>
-		Mis à jour : ${heure}
 	`;
 }
 
-function afficherListe(
-	stations: VeloStationInformation[],
-	statuts: Map<string, VeloStationStatus>,
-	marqueurs: Map<string, L.Marker>,
-	carte: L.Map,
-	filtre = ""
-): void {
+// la liste des stations avec le nombre de velos dispo
+function afficherListe(stations: VeloStationInformation[], statuts: Map<string, VeloStationStatus>, marqueurs: Map<string, L.Marker>, carte: L.Map, filtre = "" ): void {
 	const liste = document.getElementById("station-list")!;
 	const stationsFiltrees = filtre
 		? stations.filter(s => s.name.toLowerCase().includes(filtre.toLowerCase()))
@@ -69,10 +64,12 @@ function afficherListe(
 	}
 }
 
+//
 export async function renderApp(): Promise<void> {
 	const conteneurCarte = document.querySelector<HTMLElement>("#map");
 	if (!conteneurCarte) return;
 
+	// on fait les methodes sur un tableau, all pour faire sur toutes les valeurs
 	const [infoRes, statutRes] = await Promise.all([
 		fetchStationInformation(),
 		fetchStationStatus(),
@@ -111,7 +108,7 @@ export async function renderApp(): Promise<void> {
 		marqueurs.set(station.station_id, marqueur);
 	}
 
-	// Recherche
+	// Recherche 
 	afficherListe(stations, statuts, marqueurs, carte);
 	document.getElementById("search")?.addEventListener("input", e => {
 		afficherListe(stations, statuts, marqueurs, carte, (e.target as HTMLInputElement).value);
