@@ -44,7 +44,7 @@ public class Proxy implements InterfaceProxy {
   public void lancerServeurHttp () {
 		try {
       HttpServeur server = HttpServer.create(new InetSocketAddress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
-      server.createContext("/", new ProxyHandler()); //configuration du handler pour le chemin "/" (home)
+      server.createContext("/", new ProxyHandler(this)); //configuration du handler pour le chemin "/" (home)
       server.setExecutor(null); //pas d'objet Executor pour le proxy  --> Executor : remplace la création de Thread explicite (executor.execute(new RunnableTask()); | new Thread(new RunnableTask()).start();)
       
       server.start(); // avant de start il faut s'assurer que les deux services RMI sont connectés au Proxy. --> Ici ok puisque isIncidentsReady et isRestaurantsReady sont true

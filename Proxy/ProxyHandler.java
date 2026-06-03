@@ -1,14 +1,15 @@
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 
 class ProxyHandler implements HttpHandler {
-
+  
+  private Proxy proxy;
+  
+  public ProxyHandler(Proxy proxy) {
+    this.proxy = proxy;
+  }
+  
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     
@@ -22,6 +23,19 @@ class ProxyHandler implements HttpHandler {
         for (String value : entry.getValue()) {
             System.out.println(entry.getKey() + ": " + value);
         }
+    }
+    
+    String uri = exchange.getRequestURI();
+    if (uri.startsWith("/api")) {
+      String endpoint = uri.substring(4);
+      
+      if (endpoint.startsWith("/bd")) {
+        //appel rmi bd
+      } else if (endpoint.startsWith("/data") {
+        //appel rmi données bloquées
+      } else {
+        System.out.println("/api/bd/...  || /api/data/...");
+      }
     }
 
 
