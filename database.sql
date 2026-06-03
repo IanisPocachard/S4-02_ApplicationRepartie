@@ -86,3 +86,9 @@ INSERT INTO Reservation (
          );
 
 COMMIT;
+
+
+-- Supprimer la table
+-- DROP TABLE Reservation;
+-- DROP TABLE TableRestaurant;
+-- DROP TABLE Restaurant;
