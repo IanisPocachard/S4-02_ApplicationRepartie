@@ -14,10 +14,6 @@ public class LancerServiceIncidents {
 
             InterfaceProxy serviceProxyDistant = (InterfaceProxy) registry.lookup("proxy");
 
-            // exportation de l'objet service pour le rendre accessible à distance
-            Object rd = (InterfaceIncidents) UnicastRemoteObject.exportObject(service, 0);
-
-
             serviceProxyDistant.setIncidents(service); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
             
         } catch (RemoteException e) {
