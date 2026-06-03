@@ -12,37 +12,32 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.rmi.RemoteException;
 import java.time.Duration;
 
-public class ServiceDonneesOuvertes implements InterfaceProxy {
+public class ServiceIncidents implements InterfaceIncidents {
 
     private static final String URL = "https://carto.g-ny.eu/data/cifs/cifs_waze_v2.json";
 
-    public ServiceDonneesOuvertes() throws RemoteException {
+    public ServiceIncidents() throws RemoteException {
         super();
     }
 
-    // transmettre les données recuperer via http
-    @Override
-    public void setIncidents(InterfaceIncidents incidents) throws RemoteException {
-        System.out.println("setIncidents appelé");
+
+    public String getIncidentsJson() throws RemoteException {
+        return fetchDonnees(); // appelle la méthode fetchDonnees pour récupérer les données d'incidents au format JSON et les renvoyer
     }
 
-    @Override
-    public void setRestaurants(InterfaceRestaurants restaurants) throws RemoteException {
-        System.out.println("setRestaurants appelé");
-    }
 
     // Recuperation http
     public String fetchDonnees() {
         try {
             HttpClient client = HttpClient.newBuilder()
-                    .version(Version.HTTP_1_1)
-                    .followRedirects(Redirect.NORMAL)
-                    .connectTimeout(Duration.ofSeconds(20))
-                    .proxy(ProxySelector.of(new InetSocketAddress("www-cache", 3128)))
+                    .version(Version.HTTP_1_1) // permet de forcer l'utilisation de HTTP/1.1
+                    .followRedirects(Redirect.NORMAL) // permet de suivre les redirections HTTP automatiquement
+                    .connectTimeout(Duration.ofSeconds(20)) // définit un délai d'attente pour la connexion de 20 sec
+                    .proxy(ProxySelector.of(new InetSocketAddress("www-cache", 3128))) // configure un proxy pour les requêtes HTTP comme on va lancer sur un ordi de l'IUT
                     .authenticator(Authenticator.getDefault())
-                    .build();
+                    .build(); // permet de construire le client HTTP avec les paramètres spécifiés juste au dessus
 
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder() // on construit ensuite la requete HTTP vers l'URL de l'API de traffic
                     .uri(URI.create(URL))
                     .GET()
                     .build();
@@ -57,7 +52,7 @@ public class ServiceDonneesOuvertes implements InterfaceProxy {
                 return null;
             }
 
-            return response.body();
+            return response.body(); // renvoie le corps de la réponse HTTP sous forme de chaîne de caractères, donc le xcontenu de l'API de traffic
 
         } catch (IOException e) {
             System.err.println("Erreur réseau : " + e.getMessage());
@@ -65,6 +60,6 @@ public class ServiceDonneesOuvertes implements InterfaceProxy {
             System.err.println("Requête interrompue");
             Thread.currentThread().interrupt();
         }
-        return null;
+        return null; // TODO : peut-être renvoyer une chaîne de caractères indiquant une erreur au lieu de null pour mieux gérer les erreurs côté client
     }
 }
