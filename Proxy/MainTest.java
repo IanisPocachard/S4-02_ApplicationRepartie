@@ -1,11 +1,11 @@
-import com.sum.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpServer;
 import java.net.InetSocketAddress;
 
 class MainTest {
 
   public static void main(String[] args) {
     try {
-      HttpServeur server = HttpServer.create(new InetSocketAddress(8080), 0);
+      HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
       server.createContext("/", new ProxyHandler());
       server.setExecutor(null);
       
