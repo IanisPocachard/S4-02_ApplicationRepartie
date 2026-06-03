@@ -84,3 +84,5 @@ INSERT INTO Reservation (
              1003, 'Bernard', 'Lucas', '0622222222',
              2, 2, 4, TO_TIMESTAMP('2026-06-11 20:00:00', 'YYYY-MM-DD HH24:MI:SS')
          );
+
+COMMIT;
