@@ -9,4 +9,8 @@ public class Credentials {
 }
 ```
 
-- En fonction de votre IDE, importer les librairies `lib/ojdbc11.jar` et `lib/json-20131018.jar`.
+- Créer et enrichir la base de données grâce au fichier `database.sql`
+
+- Utiliser Maven pour compiler et lancer le projet :
+    - `mvn clean compile` : compilation du projet
+    - `mvn exec:java` : lance la classe de test Client
