@@ -10,6 +10,15 @@ class ProxyHandler implements HttpHandler {
     this.proxy = proxy;
   }
   
+  public envoyerRequete(HttpExchange exchange, String responce) {// TODO : nouveau param pour renvoyer soit du JSON soit du texte (content-type) + nouveau param pour le code (400 si erreur)
+    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
+    exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
+
+    try (OutputStream os = exchange.getResponseBody()) { //exchange.getResponseBody() --> récupère le flux de sortie associé à la réponse HTTP. c’est dans ce flux qu’on écrit le contenu envoyé au client.
+      os.write(response.getBytes(StandardCharsets.UTF_8)); // os.write --> écrit les octets de la chaîne response dans le flux de réponse. | response.getBytes(StandardCharsets.UTF_8) --> Convertit la chaîne de caractères en tableau d’octets en utilisant l’encodage UTF-8. 
+    }
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     
@@ -31,23 +40,21 @@ class ProxyHandler implements HttpHandler {
       
       if (endpoint.startsWith("/bd")) {
         //appel rmi bd
-      } else if (endpoint.startsWith("/data") {
+        //envoyerRequete(exchange, resultat_rmi);
+      } else if (endpoint.startsWith("/data")) {
         //appel rmi données bloquées
+        //envoyerRequete(exchange, resultat_rmi);
       } else {
         System.out.println("/api/bd/...  || /api/data/...");
+        //envoyerRequete(exchange, "erreur"); --> code 400
       }
     }
 
 
-    //reponse du serveur web
+    
     String response = "Reponse Test depuis le serveur HTTP";
-
-    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
-    exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
-
-    try (OutputStream os = exchange.getResponseBody()) { //exchange.getResponseBody() --> récupère le flux de sortie associé à la réponse HTTP. c’est dans ce flux qu’on écrit le contenu envoyé au client.
-      os.write(response.getBytes(StandardCharsets.UTF_8)); // os.write --> écrit les octets de la chaîne response dans le flux de réponse. | response.getBytes(StandardCharsets.UTF_8) --> Convertit la chaîne de caractères en tableau d’octets en utilisant l’encodage UTF-8. 
-    }
+    envoyerRequete(exchange, responce);
+    
   }
 
 
