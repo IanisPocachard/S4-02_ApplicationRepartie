@@ -1,8 +1,9 @@
+package database_service;
+
 import org.json.JSONObject;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Reservation {
 
@@ -35,7 +36,7 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" +
+        return "database_service.Reservation{" +
                 "id=" + id +
                 ", nomClient='" + nomClient + '\'' +
                 ", prenomClient='" + prenomClient + '\'' +

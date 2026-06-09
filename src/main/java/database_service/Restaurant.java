@@ -1,3 +1,5 @@
+package database_service;
+
 import org.json.JSONObject;
 
 import java.sql.*;
@@ -25,7 +27,7 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "Restaurant{" +
+        return "database_service.Restaurant{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
                 ", adresse='" + adresse + '\'' +

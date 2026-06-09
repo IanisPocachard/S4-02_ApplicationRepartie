@@ -1,3 +1,5 @@
+package database_service;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;

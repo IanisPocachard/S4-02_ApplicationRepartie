@@ -1,3 +1,5 @@
+package database_service;
+
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
 
@@ -121,10 +123,10 @@ public class Client {
                         "060000000" + i
                 );
 
-                System.out.println("Reservation " + i + " : " + result);
+                System.out.println("database_service.Reservation " + i + " : " + result);
 
             } catch (RemoteException e) {
-                System.err.println("Reservation " + i
+                System.err.println("database_service.Reservation " + i
                         + " : erreur distante - " + e.getMessage());
             }
         }

@@ -1,5 +1,13 @@
+package proxy;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 
 class ProxyHandler implements HttpHandler {
@@ -10,7 +18,7 @@ class ProxyHandler implements HttpHandler {
     this.proxy = proxy;
   }
   
-  public envoyerRequete(HttpExchange exchange, String responce) {// TODO : nouveau param pour renvoyer soit du JSON soit du texte (content-type) + nouveau param pour le code (400 si erreur)
+  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {// TODO : nouveau param pour renvoyer soit du JSON soit du texte (content-type) + nouveau param pour le code (400 si erreur)
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
@@ -19,7 +27,7 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
-  public envoyerRequete(HttpExchange exchange, String responce, int status) {
+  public void envoyerRequete(HttpExchange exchange, String response, int status) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -28,7 +36,7 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
-  public envoyerRequete(HttpExchange exchange, String responce, int status, boolean isJson) {
+  public void envoyerRequete(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
@@ -53,7 +61,7 @@ class ProxyHandler implements HttpHandler {
         }
     }
     
-    String uri = exchange.getRequestURI();
+    String uri = String.valueOf(exchange.getRequestURI());
     if (uri.startsWith("/api")) {
       String endpoint = uri.substring(4);
       
@@ -72,7 +80,7 @@ class ProxyHandler implements HttpHandler {
 
     
     String response = "Reponse Test depuis le serveur HTTP";
-    envoyerRequete(exchange, responce);
+    envoyerRequete(exchange, response);
     
   }
 

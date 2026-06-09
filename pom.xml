@@ -47,7 +47,7 @@
                         <configuration>
                             <sources>
                                 <source>service</source>
-                                <source>Proxy</source>
+                                <source>proxy.Proxy</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -58,7 +58,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <mainClass>Client</mainClass>
+                    <mainClass>database_service.Client</mainClass>
                 </configuration>
             </plugin>
         </plugins>

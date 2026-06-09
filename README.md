@@ -29,9 +29,9 @@ npm install leaflet
 - `frontend/typescript/config/` : configuration et constantes
 
 ## Setup Projet :
-- Créer la classe `src/java/Credentials.java`, avec le code suivant à compléter :
+- Créer la classe `src/java/database_service.Credentials.java`, avec le code suivant à compléter :
 ```java
-public class Credentials {
+public class database_service.Credentials {
     public static final String USERNAME = "", PASSWORD = "";
 }
 ```
@@ -40,4 +40,4 @@ public class Credentials {
 
 - Utiliser Maven pour compiler et lancer le projet :
   - `mvn clean compile` : compilation du projet
-  - `mvn exec:java` : lance la classe de test Client
+  - `mvn exec:java` : lance la classe de test database_service.Client

@@ -7,6 +7,6 @@ dist/
 frontend/dist/
 target/
 
-src/main/java/Credentials.java
+src/main/java/database_service/Credentials.java
 
 *.class
