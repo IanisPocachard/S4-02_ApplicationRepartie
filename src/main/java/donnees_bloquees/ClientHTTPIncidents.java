@@ -1,3 +1,5 @@
+package donnees_bloquees;
+
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -12,22 +14,15 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.rmi.RemoteException;
 import java.time.Duration;
 
-public class ServiceIncidents implements InterfaceIncidents {
+public class ClientHTTPIncidents implements InterfaceIncidents {
 
-    private static final String URL = "https://carto.g-ny.eu/data/cifs/cifs_waze_v2.json";
 
-    public ServiceIncidents() throws RemoteException {
+    public ClientHTTPIncidents() throws RemoteException {
         super();
     }
 
-
-    public String getIncidentsJson() throws RemoteException {
-        return fetchDonnees(); // appelle la méthode fetchDonnees pour récupérer les données d'incidents au format JSON et les renvoyer
-    }
-
-
     // Recuperation http
-    public String fetchDonnees() {
+    public String fetchAPIBloquee(String url) {
         try {
             HttpClient client = HttpClient.newBuilder()
                     .version(Version.HTTP_1_1) // permet de forcer l'utilisation de HTTP/1.1
@@ -38,7 +33,7 @@ public class ServiceIncidents implements InterfaceIncidents {
                     .build(); // permet de construire le client HTTP avec les paramètres spécifiés juste au dessus
 
             HttpRequest request = HttpRequest.newBuilder() // on construit ensuite la requete HTTP vers l'URL de l'API de traffic
-                    .uri(URI.create(URL))
+                    .uri(URI.create(url))
                     .GET()
                     .build();
 

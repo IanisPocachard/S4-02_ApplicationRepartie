@@ -3,33 +3,35 @@ package proxy;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
+import donnees_bloquees.InterfaceIncidents;
+import database_service.ServiceDatabase;
 
 public class Proxy implements InterfaceProxy {
-  private InterfaceIncidents incidents = null;
-  private boolean isIncidentsReady = false;
-  private InterfaceRestaurants restaurants = null;
+  private InterfaceIncidents incident = null;
+  private boolean isIncidentReady = false;
+  private ServiceDatabase restaurant = null;
   private boolean isRestaurantReady = false;
   
   public Proxy() {}
   
-  public void setIncidents(InterfaceIncidents incidents) {
-    this.incidents = incidents;
-    this.isIncidentsReady = true;
-    if (this.isRestaurantsReady) this.lancerServeurHttp();
+  public void setIncident(InterfaceIncidents incident) {
+    this.incident = incident;
+    this.isIncidentReady = true;
+    if (this.isRestaurantReady) this.lancerServeurHttp();
   }
   
-  public void setRestaurants(InterfaceRestaurants restaurants) {
-    this.restaurants = restaurants;
-    this.isRestaurantsReady = true;
-    if (this.isIncidentsReady) this.lancerServeurHttp();
+  public void setRestaurant(ServiceDatabase restaurant) {
+    this.restaurant = restaurant;
+    this.isRestaurantReady = true;
+    if (this.isIncidentReady) this.lancerServeurHttp();
   }
 
   public InterfaceIncidents getIncidents() {
-    return this.incidents;
+    return this.incident;
   }
 
-  public InterfaceRestaurants getRestaurants() {
-    return this.restaurants;
+  public ServiceDatabase getRestaurants() {
+    return this.restaurant;
   }
   
   public void lancerServeurHttp () {
@@ -38,7 +40,7 @@ public class Proxy implements InterfaceProxy {
       server.createContext("/", new ProxyHandler(this)); //configuration du handler pour le chemin "/" (home)
       server.setExecutor(null); //pas d'objet Executor pour le proxy  --> Executor : remplace la création de Thread explicite (executor.execute(new RunnableTask()); | new Thread(new RunnableTask()).start();)
       
-      server.start(); // avant de start il faut s'assurer que les deux services RMI sont connectés au proxy.Proxy. --> Ici ok puisque isIncidentsReady et isRestaurantsReady sont true
+      server.start(); // avant de start il faut s'assurer que les deux services RMI sont connectés au proxy.Proxy. --> Ici ok puisque isIncidentReady et isRestaurantsReady sont true
     }catch (Exception e) {
       e.printStackTrace();
     }

@@ -1,3 +1,5 @@
+package donnees_bloquees;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,7 +14,7 @@ public class LancerServiceIncidents {
         String ip = args.length > 0 ? args[0] : "localhost";
 
         // instanciation du service de données
-        ServiceIncidents service = new ServiceIncidents();
+        ClientHTTPIncidents service = new ClientHTTPIncidents();
 
         // export de l'objet sur le réseau
         InterfaceIncidents rd = (InterfaceIncidents) UnicastRemoteObject.exportObject(service, 0);
@@ -21,7 +23,7 @@ public class LancerServiceIncidents {
 
         InterfaceProxy serviceProxyDistant = (InterfaceProxy) reg.lookup("proxy"); // on récupère le proxy distant dans le registre RMI du proxy distant
 
-        serviceProxyDistant.setIncidents(rd); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
+        serviceProxyDistant.setIncident(rd); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
 
         System.out.println("Client HTTP exporté vers le proxy, prêt à recevoir les requêtes du proxy pour intéragir avec des API bloquées");
     }

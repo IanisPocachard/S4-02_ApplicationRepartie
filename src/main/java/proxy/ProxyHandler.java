@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import donnees_bloquees.InterfaceIncidents;
+import database_service.ServiceDatabase;
 
 
 class ProxyHandler implements HttpHandler {
@@ -76,12 +78,12 @@ class ProxyHandler implements HttpHandler {
       String endpoint = uri.substring(4);
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
-        InterfaceRestaurants restaurant = this.proxy.getRestaurants();
+          ServiceDatabase restaurant = this.proxy.getRestaurants();
         String jsonBd = restaurant.getCoordonneesRestaurants();
         envoyerRequete(exchange, jsonBd, true);
       } else if (endpoint.startsWith("/data")) {
         InterfaceIncidents incidents = this.proxy.getIncidents();
-        String jsonBd = incidents.getIncidentsJson();
+        String jsonBd = incidents.fetchAPIBloquee("url api bloquée (incident)"); // TODO : modifier pour fetch vers la bonne url passée par le frontend
         envoyerRequete(exchange, jsonBd, true);
       } else {
         System.out.println("/api/bd/...  || /api/data/...");
