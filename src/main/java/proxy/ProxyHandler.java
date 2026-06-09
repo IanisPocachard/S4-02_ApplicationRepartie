@@ -36,6 +36,16 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
+  public void envoyerRequete(HttpExchange exchange, String response, boolean isJson) throws IOException {
+    if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+    else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+    exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
+
+    try (OutputStream os = exchange.getResponseBody()) { 
+      os.write(response.getBytes(StandardCharsets.UTF_8));
+    }
+  }
+
   public void envoyerRequete(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
@@ -65,22 +75,24 @@ class ProxyHandler implements HttpHandler {
     if (uri.startsWith("/api")) {
       String endpoint = uri.substring(4);
       
-      if (endpoint.startsWith("/bd")) {
-        //appel rmi bd
-        //envoyerRequete(exchange, resultat_rmi);
+      if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
+        InterfaceRestaurants restaurant = this.proxy.getRestaurants();
+        String jsonBd = restaurant.getCoordonneesRestaurants();
+        envoyerRequete(exchange, jsonBd, true);
       } else if (endpoint.startsWith("/data")) {
-        //appel rmi données bloquées
-        //envoyerRequete(exchange, resultat_rmi);
+        InterfaceIncidents incidents = this.proxy.getIncidents();
+        String jsonBd = incidents.getIncidentsJson();
+        envoyerRequete(exchange, jsonBd, true);
       } else {
         System.out.println("/api/bd/...  || /api/data/...");
-        //envoyerRequete(exchange, "erreur"); --> code 400
+        envoyerRequete(exchange, "erreur : endpoint non valide", 400);
       }
+    } else {
+      String response = "Reponse Test depuis le serveur HTTP";
+      envoyerRequete(exchange, response);
     }
 
 
-    
-    String response = "Reponse Test depuis le serveur HTTP";
-    envoyerRequete(exchange, response);
     
   }
 

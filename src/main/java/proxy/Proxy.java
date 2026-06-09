@@ -23,6 +23,14 @@ public class Proxy implements InterfaceProxy {
     this.isRestaurantsReady = true;
     if (this.isIncidentsReady) this.lancerServeurHttp();
   }
+
+  public InterfaceIncidents getIncidents() {
+    return this.incidents;
+  }
+
+  public InterfaceRestaurants getRestaurants() {
+    return this.restaurants;
+  }
   
   public void lancerServeurHttp () {
 		try {
