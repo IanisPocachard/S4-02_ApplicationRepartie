@@ -19,6 +19,25 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
+  public envoyerRequete(HttpExchange exchange, String responce, int status) {
+    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+    exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
+
+    try (OutputStream os = exchange.getResponseBody()) { 
+      os.write(response.getBytes(StandardCharsets.UTF_8));
+    }
+  }
+
+  public envoyerRequete(HttpExchange exchange, String responce, int status, boolean isJson) {
+    if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+    else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+    exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
+
+    try (OutputStream os = exchange.getResponseBody()) { 
+      os.write(response.getBytes(StandardCharsets.UTF_8));
+    }
+  }
+
   @Override
   public void handle(HttpExchange exchange) throws IOException {
     

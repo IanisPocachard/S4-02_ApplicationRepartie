@@ -11,15 +11,11 @@ import java.rmi.Remote;
 
 public class Proxy implements InterfaceProxy {
   private InterfaceIncidents incidents = null;
-  private boolean isIncidentsReady;
+  private boolean isIncidentsReady = false;
   private InterfaceRestaurants restaurants = null;
-  private boolean isRestaurantReady;
+  private boolean isRestaurantReady = false;
   
-  public Proxy() {
-     this.isIncidentsReady = false;
-     this.isRestaurantReady = false;
-     this.lancerAnnuaire();
-  }
+  public Proxy() {}
   
   public void setIncidents(InterfaceIncidents incidents) {
     this.incidents = incidents;
