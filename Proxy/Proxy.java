@@ -33,14 +33,6 @@ public class Proxy implements InterfaceProxy {
     if (this.isIncidentsReady) this.lancerServeurHttp();
   }
   
-  public void lancerAnnuaire() {
-    Proxy proxy = new Proxy();
-		InterfaceProxy proxy = (InterfaceProxy) UnicastRemoteObject.exportObject(proxy, 0);
-
-		Registry reg = LocateRegistry.createRegistry(1099);
-		reg.rebind("proxy", proxy);
-  }
-  
   public void lancerServeurHttp () {
 		try {
       HttpServeur server = HttpServer.create(new InetSocketAddress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
