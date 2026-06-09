@@ -23,6 +23,9 @@ export interface VeloStationInformationResponse {
 	};
 }
 
+/**
+ * Interface représentant les stations de vélib dans l'api
+ */
 export interface VeloStationInformation {
 	station_id: string;
 	name: string;
@@ -42,6 +45,10 @@ export interface VeloStationStatusResponse {
 	};
 }
 
+/**
+ * Représente le statut en temps réel d'une station Vélib
+ * Fournit dynamiquement les informations sur les vélos et les places disponibles
+ */
 export interface VeloStationStatus {
 	station_id: string;
 	num_bikes_available: number;
