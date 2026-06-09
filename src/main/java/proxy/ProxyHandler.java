@@ -91,8 +91,6 @@ class ProxyHandler implements HttpHandler {
       String response = "Reponse Test depuis le serveur HTTP";
       envoyerRequete(exchange, response);
     }
-
-
     
   }
 
