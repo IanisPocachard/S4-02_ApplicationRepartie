@@ -1,0 +1,115 @@
+📄 MODÈLE DE COMPTE RENDU : Application Répartie (SAÉ S4-02)
+
+Lien vers le dépôt Git : [À COMPLÉTER : URL du dépôt Git]
+Date de soutenance : Mardi 16 juin 2026
+
+Équipe :
+
+Louis ARDHUIN
+
+Ianis POCACHARD
+
+Adrien Tritarelli
+
+Ambroise GILBERT
+
+(Anastasia TOLKACHEVA)
+
+Sommaire
+
+Introduction
+
+Architecture de l'Application
+
+Réalisation Technique par Module
+    3.1. Frontend et Visualisation des Données Ouvertes
+    3.2. Proxy HTTP et Contournement CORS (Données Bloquées)
+    3.3. Services RMI (Base de données et Incidents)
+
+Procédures de Déploiement et d'Exécution
+
+Analyse Éthique et Sécurité (Contournement CORS)
+
+Conclusion
+
+1. Introduction
+Dans le cadre de la SAÉ "Application Répartie" (S4-02), notre équipe a conçu et développé une application distribuée permettant l'agrégation et la visualisation d'informations hétérogènes sur la métropole de Nancy. L'objectif principal de ce projet est de faire coopérer différents modules logiciels (interface web, serveur proxy, services distants RMI et base de données) afin de contourner les restrictions de sécurité des navigateurs tout en garantissant la robustesse des échanges réseaux.
+
+Ce compte rendu détaille nos choix techniques, l'architecture mise en place, ainsi que les instructions nécessaires pour déployer et exécuter notre solution sur un environnement Linux.
+
+2. Architecture de l'Application
+Notre application repose sur une architecture distribuée découpée en trois couches principales, illustrée par le schéma ci-dessous :
+
+[À COMPLÉTER : image de l'architecture - DiagrammeProjet.png]
+
+Application Web Cliente : Développée en TypeScript, elle s'exécute dans le navigateur et affiche une carte interactive (Leaflet). Elle communique de manière asynchrone (Fetch API) avec des API publiques et notre Proxy.
+
+Serveur HTTP (Proxy) : Un serveur intermédiaire développé en Java (HttpServer) qui réceptionne les requêtes du client web et effectue les appels RMI correspondants.
+
+Services RMI et Accès aux Données :
+
+Un service dédié à l'interrogation de la base de données Oracle (hébergée sur Charlemagne) via JDBC.
+
+Un service dédié à la récupération de données externes (incidents de circulation Waze) agissant comme un client HTTP serveur à serveur pour s'affranchir des règles CORS.
+
+
+3. Réalisation Technique par Module
+
+
+3.1. Frontend et Visualisation des Données Ouvertes
+L'interface utilisateur a été packagée avec ESBuild et développée en TypeScript.
+
+Données Ouvertes : Nous avons intégré l'API JCDecaux (VéloStan) pour récupérer en temps réel l'état des stations vélos (places et vélos disponibles).
+
+[À COMPLÉTER : Décrivez ici rapidement comment vous avez implémenté la carte Leaflet et les marqueurs de couleurs pour les stations]
+
+
+3.2. Proxy HTTP et Contournement CORS (Données Bloquées)
+Certaines API, comme l'API Waze du Grand Nancy, n'intègrent pas l'en-tête Access-Control-Allow-Origin, bloquant ainsi les requêtes directes depuis notre interface web (erreur CORS Cross-Origin).
+
+Pour résoudre ce problème, nous avons implémenté un serveur HTTP (com.sun.net.httpserver).
+
+[À COMPLÉTER : Expliquez comment le ProxyHandlerparse les URL (ex:/api/bdou/api/data) pour déclencher les appels aux services distants]
+
+
+3.3. Services RMI (Base de données et Incidents)
+Gestion de la Base de données : Nous avons conçu une base de données Oracle en 3FN comprenant les tables Restaurant, TableRestaurant et Reservation. L'accès concurrent lors des réservations est géré par des transactions manuelles (setAutoCommit(false)) et un verrouillage pessimiste (FOR UPDATE sur la table TableRestaurant) pour éviter les conflits.
+
+Récupération des Incidents : Le composant ServiceIncidents utilise le client HTTP natif de Java 11+ (java.net.http.HttpClient) configuré pour passer par le proxy de l'IUT (www-cache:3128) afin de récupérer le fichier JSON des incidents.
+
+4. Procédures de Déploiement et d'Exécution
+Note : Les opérations suivantes sont conçues pour un environnement Linux (machines IUT).
+
+Étape 1 : Préparation de la base de données
+
+Renseigner les identifiants Oracle (Charlemagne) dans le fichier src/java/database_service/Credentials.java.
+
+Exécuter le script database.sql pour initialiser le schéma et le jeu d'essai.
+
+Étape 2 : Lancement des Services Backend (Java)
+Le projet utilise Maven pour la gestion des dépendances (JSON, ojdbc11) et la compilation.
+
+Bash
+mvn clean compile
+[À COMPLÉTER : Ajouter ici les commandes exactes pour démarrer le rmiregistry, puis lancer les classes Serveur RMI (LancerServiceIncidents) et le Proxy (LancerProxy)]
+
+Étape 3 : Déploiement Frontend
+Dans le dossier frontend :
+
+Bash
+npm install
+npm run build
+Héberger le dossier frontend résultant sur le serveur WebEtu.
+
+5. Analyse Éthique et Sécurité (Contournement CORS)
+Le sujet nous invite à réfléchir sur la responsabilité de contourner la politique de sécurité du navigateur en utilisant un proxy backend.
+
+Est-ce responsable ?
+Oui, sous réserve de bonnes pratiques. Les politiques CORS (Cross-Origin Resource Sharing) sont mises en place par les navigateurs pour protéger l'utilisateur final contre les attaques CSRF (vol de session, actions à son insu), et non pour protéger l'API distante.
+Le contournement via notre service Java (modèle d'architecture BFF - Backend For Frontend) est une pratique standard dans l'industrie pour agréger des API tierces non conçues pour le client.
+Cependant, notre responsabilité se déplace vers le backend :
+
+[À COMPLÉTER : Listez ici 1 ou 2 arguments sur la sécurisation de votre proxy (ex: s'assurer qu'on ne met pas notre propre proxy en open-relay, filtrage des entrées, etc.)]
+
+6. Conclusion
+[À COMPLÉTER : Petit bilan sur ce qui a fonctionné, les difficultés rencontrées (ex: gestion des IPs dynamiques dans le code, configuration sur les machines de l'IUT) et ce que ce projet vous a appris en architecture réseau.]
