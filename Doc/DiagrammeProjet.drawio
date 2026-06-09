@@ -1,92 +1,80 @@
-<mxfile host="app.diagrams.net">
-  <diagram name="Page-1" id="F1oYF4PqkX03N7b6Sbgo">
-    <mxGraphModel dx="1290" dy="755" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-11" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="h0KqDEHRPV8fkYqmAvE9-4">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-17" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Utilisation du proxy&amp;nbsp;" vertex="1">
-          <mxGeometry relative="1" x="-0.4069" y="2" as="geometry">
-            <mxPoint x="1" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-1" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Application web cliente" vertex="1">
-          <mxGeometry height="130" width="150" x="60" y="90" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-2" parent="h0KqDEHRPV8fkYqmAvE9-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JS/Typescript&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Fetch&lt;/div&gt;&lt;div&gt;Async/Await&lt;/div&gt;" vertex="1">
-          <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-3" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="Données ouvertes" vertex="1">
-          <mxGeometry height="80" width="160" x="560" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-13" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="h0KqDEHRPV8fkYqmAvE9-6">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-28" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="appel RMI" vertex="1">
-          <mxGeometry relative="1" x="0.3304" y="-3" as="geometry">
-            <mxPoint x="20" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-4" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Serveur HTTP&amp;nbsp; (PROXY)" vertex="1">
-          <mxGeometry height="130" width="150" x="310" y="180" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-5" parent="h0KqDEHRPV8fkYqmAvE9-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Utilise Service RMI" vertex="1">
-          <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-25" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="h0KqDEHRPV8fkYqmAvE9-23">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-6" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Service RMI gestion BD" vertex="1">
-          <mxGeometry height="130" width="150" x="210" y="390" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-7" parent="h0KqDEHRPV8fkYqmAvE9-6" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;JDBC/transactions&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;&lt;div&gt;JSON&lt;/div&gt;" vertex="1">
-          <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-8" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="Données bloquées" vertex="1">
-          <mxGeometry height="80" width="160" x="610" y="290" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-9" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" value="Service RMI pour les données bloquées" vertex="1">
-          <mxGeometry height="130" width="150" x="420" y="390" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-10" parent="h0KqDEHRPV8fkYqmAvE9-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="110" x="20" y="50" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-14" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.596;entryY=-0.018;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-9">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-29" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-14" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="appel RMI" vertex="1">
-          <mxGeometry relative="1" x="0.0452" y="1" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-15" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-8">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-20" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-15" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Appel API" vertex="1">
-          <mxGeometry relative="1" x="-0.3917" y="1" as="geometry">
-            <mxPoint x="-1" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-18" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-3">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-19" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-18" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Appel API (forward)" vertex="1">
-          <mxGeometry relative="1" x="-0.428" y="1" as="geometry">
-            <mxPoint x="1" as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-23" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Base de données" vertex="1">
-          <mxGeometry height="90" width="120" x="225" y="610" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-24" parent="h0KqDEHRPV8fkYqmAvE9-23" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;Oracle&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;3FN&lt;/div&gt;" vertex="1">
-          <mxGeometry height="50" width="90" x="15" y="30" as="geometry" />
-        </mxCell>
-        <mxCell id="h0KqDEHRPV8fkYqmAvE9-26" parent="1" style="shape=note;size=20;whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;le trafic web va passer par le proxy donc les appels API pour les données ouvertes aussi&amp;nbsp;&lt;/div&gt;&lt;div&gt;--&amp;gt; Donc il faudra juste forward la requête&lt;/div&gt;" vertex="1">
-          <mxGeometry height="110" width="190" x="370" y="20" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-</mxfile>
+<mxGraphModel dx="774" dy="453" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-11" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="h0KqDEHRPV8fkYqmAvE9-4">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-17" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-11" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Utilisation du proxy (CORS et BD)" vertex="1">
+      <mxGeometry relative="1" x="-0.4069" y="2" as="geometry">
+        <mxPoint x="38" as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-1" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Application web cliente" vertex="1">
+      <mxGeometry height="130" width="150" x="60" y="90" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-2" parent="h0KqDEHRPV8fkYqmAvE9-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JS/Typescript&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Fetch&lt;/div&gt;&lt;div&gt;Async/Await&lt;/div&gt;" vertex="1">
+      <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-3" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="Données ouvertes" vertex="1">
+      <mxGeometry height="80" width="160" x="570" y="50" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-13" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="h0KqDEHRPV8fkYqmAvE9-6">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-28" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-13" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="appel RMI" vertex="1">
+      <mxGeometry relative="1" x="0.3304" y="-3" as="geometry">
+        <mxPoint x="20" as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-4" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Serveur HTTP&amp;nbsp; (PROXY)" vertex="1">
+      <mxGeometry height="130" width="150" x="450" y="180" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-5" parent="h0KqDEHRPV8fkYqmAvE9-4" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Utilise Service RMI" vertex="1">
+      <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-25" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="h0KqDEHRPV8fkYqmAvE9-23">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-6" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Service RMI gestion BD" vertex="1">
+      <mxGeometry height="130" width="150" x="150" y="390" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-7" parent="h0KqDEHRPV8fkYqmAvE9-6" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;JDBC/transactions&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;&lt;div&gt;JSON&lt;/div&gt;" vertex="1">
+      <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-8" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="Données bloquées" vertex="1">
+      <mxGeometry height="80" width="160" x="610" y="290" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-9" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" value="Service RMI pour les données bloquées" vertex="1">
+      <mxGeometry height="130" width="150" x="360" y="390" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-10" parent="h0KqDEHRPV8fkYqmAvE9-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;" vertex="1">
+      <mxGeometry height="60" width="110" x="20" y="50" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-14" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.596;entryY=-0.018;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-9">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-15" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-8">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-20" connectable="0" parent="h0KqDEHRPV8fkYqmAvE9-15" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Appel API" vertex="1">
+      <mxGeometry relative="1" x="-0.3917" y="1" as="geometry">
+        <mxPoint x="-1" as="offset" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-23" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Base de données" vertex="1">
+      <mxGeometry height="90" width="120" x="225" y="610" as="geometry" />
+    </mxCell>
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-24" parent="h0KqDEHRPV8fkYqmAvE9-23" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;Oracle&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;3FN&lt;/div&gt;" vertex="1">
+      <mxGeometry height="50" width="90" x="15" y="30" as="geometry" />
+    </mxCell>
+    <mxCell id="Cb569ukCleW-O94MFypw-3" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.07;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-3">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="Cb569ukCleW-O94MFypw-4" connectable="0" parent="Cb569ukCleW-O94MFypw-3" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="appel API" vertex="1">
+      <mxGeometry relative="1" x="0.4258" as="geometry">
+        <mxPoint as="offset" />
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
