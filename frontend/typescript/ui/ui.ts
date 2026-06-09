@@ -1,39 +1,13 @@
 import L from "leaflet";
-import { initMap, addIncidentMarkers } from "../map/map";
+import { initMap, addIncidentMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import { fetchAPIIncidents } from "../http/incidents_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 import { INCIDENTS_API_URL, PROXY_URL } from "../config/config";
 
 
-/**
- * Gestion de la couleur d'affichage des balises sur la carte en fonction du nombre de vélos dispo
- * - Rouge : aucun vélo
- * - Orange : Moins de 3 vélos
- * - Vert : Plus de 3 vélos
- * @param velos - Le nombre de vélos dispo sur la station
- * @returns Le code couleur correspondant au statut.
- */
-function couleur(velos: number): string {
-	if (velos === 0) return "#ef4444";
-	if (velos <= 3) return "#f59e0b";
-	return "#22c55e";
-}
 
 
-/**
- * Construction d'un icon
- * @param velos - le nombre de vélos dispo sur la station
- * @returns une icon d'une station de velib
- */
-function icone(velos: number): L.DivIcon {
-	return L.divIcon({
-		className: "",
-		html: `<div style="width:12px;height:12px;background:${couleur(velos)};border:2px solid white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
-		iconSize: [12, 12],
-		iconAnchor: [6, 6],
-	});
-}
 
 /**
  * Construction d'une pop-up de station de velib
@@ -132,7 +106,12 @@ export async function renderApp(): Promise<void> {
 
 	afficherListe(stations, statuts, marqueurs, carte);
 
-	// Récupération des incidents et ajout des marqueurs sur la carte
-	const incidents = await fetchAPIIncidents(INCIDENTS_API_URL, PROXY_URL);
-	addIncidentMarkers(carte, incidents);
+	try {
+		// Récupération des incidents et ajout des marqueurs sur la carte
+		const incidentsRep = await fetchAPIIncidents(INCIDENTS_API_URL, PROXY_URL);
+		addIncidentMarkers(carte, incidentsRep.incidents);
+	} catch(error) {
+		console.error("Erreur lors du chargement des incidents" + error);
+	}
+
 }

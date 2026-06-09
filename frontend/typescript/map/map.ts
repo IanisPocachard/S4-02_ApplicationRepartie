@@ -1,6 +1,6 @@
 import L from "leaflet";
 import { VeloStationInformation } from "../types/velo";
-import { IncidentsResponse } from "../types/incidents";
+import { Incident } from "../types/incidents";
 
 /**
  * Initialisation du conteneur de la carte
@@ -34,11 +34,43 @@ export function addStationMarkers(map: any, stations: VeloStationInformation[]):
 	});
 }
 
-export function addIncidentMarkers(map: any, incidents: IncidentsResponse): void {
-	incidents.incidents.forEach((incident) => {
+export function addIncidentMarkers(map: any, incidents: Incident[]): void {
+	incidents.forEach((incident) => {
 		const coordonnees = incident.location.polyline.split(" ").map(Number); // on split la polyline pour récupérer les coordonnées GPS de l'incident donc on récupère un tableau [latitude, longitude]
 		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
 		console.log("Ajout du marqueur pour l'incident qui a la descritpion : " + incident.description + " à la position GPS : (" + coordonnees[0], coordonnees[1] + ")");
 		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
+	});
+}
+
+
+/**
+ * Gestion de la couleur d'affichage des balises sur la carte en fonction du nombre de vélos dispo
+ * - Rouge : aucun vélo
+ * - Orange : Moins de 3 vélos
+ * - Vert : Plus de 3 vélos
+ * @param velos - Le nombre de vélos dispo sur la station
+ * @returns Le code couleur correspondant au statut.
+ */
+export function couleur(velos: number): string {
+	if (velos === 0) return "#ef4444";
+	if (velos <= 3) return "#f59e0b";
+	return "#22c55e";
+}
+
+
+
+
+/**
+ * Construction d'un icon
+ * @param velos - le nombre de vélos dispo sur la station
+ * @returns une icon d'une station de velib
+ */
+export function icone(velos: number): L.DivIcon {
+	return L.divIcon({
+		className: "",
+		html: `<div style="width:12px;height:12px;background:${couleur(velos)};border:2px solid white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
+		iconSize: [12, 12],
+		iconAnchor: [6, 6],
 	});
 }
