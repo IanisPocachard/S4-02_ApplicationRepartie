@@ -1,6 +1,11 @@
 import L from "leaflet";
 import type { VeloStationInformation } from "../types/velo";
 
+/**
+ * Initialisation du conteneur de la carte
+ * @param container éléments html qui contient cette carte
+ * @returns La carte
+ */
 export function initMap(container: HTMLElement): any {
 	container.style.height = "500px";
 	container.style.width = "100%";
@@ -15,6 +20,11 @@ export function initMap(container: HTMLElement): any {
 	return map;
 }
 
+/**
+ * Crée sur la carte les marqeurs à chaque station vélib
+ * @param map La carte
+ * @param stations Liste des stations avec toutes les infos
+ */
 export function addStationMarkers(map: any, stations: VeloStationInformation[]): void {
 	stations.forEach((station) => {
 		const marker = L.marker([station.lat, station.lon]).addTo(map);

@@ -1,0 +1,96 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: sans-serif;
+    background: #f4f4f4;
+    color: #222;
+}
+
+.report-figure img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.report-figure figcaption {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
+}
+
+.topnav {
+    display: flex;
+    gap: 4px;
+    padding: 8px 16px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.topnav a {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #444;
+    font-size: 14px;
+}
+
+.topnav a:hover {
+    background: #f0f4ff;
+}
+
+.topnav a[aria-current="page"] {
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.topnav a:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.report {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    line-height: 1.6;
+    background: #fff;
+}
+
+.report h1 {
+    font-size: 26px;
+    margin-bottom: 16px;
+}
+
+.report h2 {
+    font-size: 18px;
+    margin: 24px 0 8px;
+    color: #2563eb;
+}
+
+.report p {
+    margin-bottom: 10px;
+}
+
+.report ul {
+    margin: 0 0 10px 20px;
+}
+
+.report li {
+    margin-bottom: 4px;
+}
+
+.report-note {
+    margin-top: 24px;
+    padding: 12px 14px;
+    background: #fff7ed;
+    border-left: 4px solid #f59e0b;
+    font-size: 13px;
+    color: #92400e;
+}

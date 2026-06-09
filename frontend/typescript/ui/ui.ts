@@ -3,12 +3,27 @@ import { initMap } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 
+
+/**
+ * Gestion de la couleur d'affichage des balises sur la carte en fonction du nombre de vélos dispo
+ * - Rouge : aucun vélo
+ * - Orange : Moins de 3 vélos
+ * - Vert : Plus de 3 vélos
+ * @param velos - Le nombre de vélos dispo sur la station
+ * @returns Le code couleur correspondant au statut.
+ */
 function couleur(velos: number): string {
 	if (velos === 0) return "#ef4444";
 	if (velos <= 3) return "#f59e0b";
 	return "#22c55e";
 }
 
+
+/**
+ * Construction d'un icon
+ * @param velos - le nombre de vélos dispo sur la station
+ * @returns une icon d'une station de velib
+ */
 function icone(velos: number): L.DivIcon {
 	return L.divIcon({
 		className: "",
@@ -18,6 +33,12 @@ function icone(velos: number): L.DivIcon {
 	});
 }
 
+/**
+ * Construction d'une pop-up de station de velib
+ * @param info Les informations d'une station
+ * @param statut Le statut de la station
+ * @returns une fenetre pop-up détaillant la station
+ */
 function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | undefined): string {
 	const velos = statut?.num_bikes_available ?? "?";
 	const places = statut?.num_docks_available ?? "?";
@@ -30,10 +51,22 @@ function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | 
 	`;
 }
 
+/**
+ * Méthode permettant de filtrer les stations non opérationnelles
+ * @param statut Information sur une station
+ * @returns un booleen true si la station est ko, false si elle est bonne
+ */
 function filtre(statut: VeloStationStatus): boolean {
 	return statut.num_bikes_available === 0 && statut.num_docks_available === 0;
 }
 
+/**
+ * 
+ * @param stations La liste des stations
+ * @param statuts Les status des stations
+ * @param marqueurs Liste des marqueurs sur la carte des stations
+ * @param carte Carte leaflet
+ */
 function afficherListe(stations: VeloStationInformation[], statuts: Map<string, VeloStationStatus>, marqueurs: Map<string, L.Marker>, carte: L.Map): void {
 	const liste = document.getElementById("station-list")!;
 	liste.innerHTML = "";
@@ -61,6 +94,12 @@ function afficherListe(stations: VeloStationInformation[], statuts: Map<string, 
 	}
 }
 
+/**
+ * Point d'entrée principal de l'app
+ * 1. Récupère les données statiques et dynamiques de l'api
+ * 2. Initatise la carte
+ * 3. Fusione les données pour générer les marqueurs sur la carte et la liste latérale.
+ */
 export async function renderApp(): Promise<void> {
 	const conteneurCarte = document.querySelector<HTMLElement>("#map");
 	if (!conteneurCarte) return;
