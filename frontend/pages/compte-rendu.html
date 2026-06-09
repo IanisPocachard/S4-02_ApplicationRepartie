@@ -15,32 +15,144 @@
 
 <main>
     <article class="report">
-        <h1>Compte rendu</h1>
+        <h1>Compte rendu — Application Répartie (SAÉ S4-02)</h1>
 
-        <h2>Présentation du projet</h2>
-        <p>
-            Cette application de SAÉ « Programmation répartie » affiche en temps réel les
-            stations VéloStan de Nancy sur une carte interactive (Leaflet), alimentée par
-            l'API GBFS de Cyclocity.
-        </p>
+<p class="report-meta">
+    <strong>Dépôt Git :</strong>
+    <a href="https://github.com/IanisPocachard/S4-02_ApplicationRepartie">
+        github.com/IanisPocachard/S4-02_ApplicationRepartie
+    </a><br>
+    <strong>Soutenance :</strong> mardi 16 juin 2026<br>
+    <strong>Équipe :</strong> Louis Ardhuin, Ianis Pocachard, Adrien Tritarelli, Ambroise Gilbert
+    <!-- À COMPLÉTER : vérifier / ajuster la composition exacte de l'équipe -->
+</p>
 
-        <h2>Architecture</h2>
-        <p>
-            Le front est écrit en TypeScript et organisé en modules (couche HTTP, carte,
-            interface, types, configuration). Le rendu cartographique repose sur Leaflet et
-            les fonds de carte OpenStreetMap.
-        </p>
+<h2>1. Introduction</h2>
+<p>
+    Cette application répartie agrège et visualise des informations hétérogènes sur la
+    métropole de Nancy : stations VéloStan, restaurants et incidents de circulation.
+    Elle fait coopérer plusieurs composants distribués — une interface web, un proxy HTTP,
+    des services RMI et une base de données Oracle — afin de contourner proprement les
+    restrictions de sécurité du navigateur tout en gérant la robustesse réseau.
+</p>
 
-        <h2>Fonctionnalités</h2>
-        <ul>
-            <li>Carte interactive des stations avec marqueurs colorés selon la disponibilité.</li>
-            <li>Liste latérale synchronisée avec la carte.</li>
-            <li>Popups détaillant vélos disponibles, places libres et capacité.</li>
-        </ul>
+<h2>2. Architecture</h2>
+<p>
+    L'application repose sur une architecture distribuée en trois couches : un client web,
+    un proxy HTTP servant de passerelle, et des services RMI donnant accès aux données.
+</p>
 
-        <p class="report-note">
-            Remplace ce contenu par ton compte rendu réel (texte, images, liens…).
-        </p>
+<figure class="report-figure">
+    <img src="../../Doc/DiagrammeProjet.png"
+         alt="Schéma de l'architecture distribuée : navigateur, proxy HTTP, services RMI et base Oracle">
+    <figcaption>Schéma complet de l'architecture et des technologies échangées.</figcaption>
+    <!-- À COMPLÉTER : vérifier le chemin de l'image une fois le site déployé sur webetu -->
+</figure>
+
+<ul>
+    <li>
+        <strong>Client web (TypeScript / Leaflet)</strong> : s'exécute dans le navigateur,
+        affiche une carte interactive centrée sur Nancy et dialogue en asynchrone (Fetch API)
+        avec les API publiques et notre proxy.
+    </li>
+    <li>
+        <strong>Proxy HTTP (Java <code>HttpServer</code>)</strong> : reçoit les requêtes du
+        client web sur le port 8080, route selon l'URL (<code>/api/bd</code>,
+        <code>/api/data</code>) et délègue aux services distants via RMI.
+    </li>
+    <li>
+        <strong>Services RMI</strong> : un service base de données (Oracle via JDBC) et un
+        service incidents (client HTTP serveur-à-serveur vers l'API Waze). Chaque service
+        s'enregistre auprès du proxy via le registre RMI.
+    </li>
+</ul>
+
+<h2>3. Réalisation technique par module</h2>
+
+<h3>3.1. Frontend et données ouvertes</h3>
+<p>
+    L'interface est écrite en TypeScript et packagée avec esbuild. Elle est organisée en
+    modules (couche <code>http</code>, <code>map</code>, <code>ui</code>, <code>types</code>,
+    <code>config</code>). Les stations VéloStan sont récupérées via l'API GBFS de Cyclocity
+    (informations statiques + statut temps réel) puis fusionnées pour afficher, sur chaque
+    marqueur, l'adresse, le nombre de vélos disponibles, les places libres et la capacité.
+    Les marqueurs sont colorés selon la disponibilité (rouge : aucun vélo, orange : ≤ 3,
+    vert : > 3) et une liste latérale synchronisée permet de recentrer la carte.
+</p>
+<!-- À COMPLÉTER : préciser l'état d'avancement de l'affichage des restaurants et des incidents côté carte -->
+
+<h3>3.2. Proxy HTTP et contournement CORS</h3>
+<p>
+    L'API d'incidents de circulation du Grand Nancy n'expose pas l'en-tête
+    <code>Access-Control-Allow-Origin</code>, ce qui bloque tout appel <code>fetch</code>
+    direct depuis le navigateur (erreur CORS). Pour contourner ce blocage, un proxy Java
+    (<code>com.sun.net.httpserver.HttpServer</code>) reçoit les requêtes du client et
+    déclenche les appels RMI correspondants : le <code>ProxyHandler</code> lit l'URI,
+    route <code>/api/bd</code> vers le service restaurants et <code>/api/data</code> vers le
+    service incidents, puis renvoie la réponse au format JSON (avec gestion d'un code 400
+    pour un endpoint invalide).
+</p>
+
+<h3>3.3. Services RMI (base de données et incidents)</h3>
+<p>
+    <strong>Base de données :</strong> base Oracle hébergée sur Charlemagne, structurée en
+    trois tables (<code>Restaurant</code>, <code>TableRestaurant</code>,
+    <code>Reservation</code>). La connexion JDBC utilise une classe <code>Database</code> en
+    Singleton avec transactions manuelles (<code>setAutoCommit(false)</code>). Le service
+    expose deux opérations distantes : récupérer les coordonnées des restaurants (réponse
+    JSON) et réserver une table (nom, prénom, nombre de convives, téléphone).
+</p>
+<p>
+    <strong>Incidents :</strong> le <code>ServiceIncidents</code> utilise le
+    <code>HttpClient</code> de Java pour interroger l'API Waze, configuré pour passer par le
+    proxy de l'IUT (<code>www-cache:3128</code>), avec gestion du code HTTP et des erreurs
+    réseau (timeout, <code>IOException</code>, interruption).
+</p>
+<!-- À COMPLÉTER : préciser si le verrouillage pessimiste (FOR UPDATE) sur la réservation est implémenté -->
+
+<h2>4. Déploiement et exécution</h2>
+<p>Opérations prévues pour un environnement Linux (machines de l'IUT).</p>
+
+<h3>Base de données</h3>
+<p>
+    Renseigner les identifiants Oracle dans <code>src/main/java/Credentials.java</code>, puis
+    exécuter <code>database.sql</code> pour créer le schéma et le jeu d'essai.
+</p>
+
+<h3>Services backend (Java / Maven)</h3>
+<p>
+    Maven gère les dépendances (<code>org.json</code>, <code>ojdbc11</code>) et la compilation
+    via <code>mvn clean compile</code>.
+</p>
+<!-- À COMPLÉTER : commandes exactes pour démarrer rmiregistry, lancer LancerProxy,
+     LancerServiceIncidents et le service base de données, avec l'ordre de lancement
+     et les adresses passées en argument (sans IP en dur) -->
+
+<h3>Frontend</h3>
+<p>
+    Dans le dossier <code>frontend</code> : <code>npm install</code> puis
+    <code>npm run build</code>. Héberger le résultat sur le serveur webetu.
+</p>
+<!-- À COMPLÉTER : URL finale du site sur webetu -->
+
+<h2>5. Analyse éthique et sécurité</h2>
+<p>
+    Le contournement de la politique CORS via un proxy backend est-il responsable ? Les
+    règles CORS protègent l'utilisateur final (contre le vol de session ou des actions à son
+    insu), pas l'API distante. Passer par un service Java serveur-à-serveur — un schéma de
+    type Backend For Frontend — est une pratique courante pour agréger des API tierces non
+    prévues pour un appel direct depuis le navigateur. La responsabilité se déplace alors vers
+    la sécurisation du proxy.
+</p>
+<!-- À COMPLÉTER : 1 ou 2 arguments concrets sur la sécurisation du proxy
+     (éviter l'open-relay, filtrage des entrées, restriction des endpoints exposés…) -->
+
+<h2>6. Conclusion</h2>
+<p class="report-note">
+    À compléter : bilan de ce qui a fonctionné, difficultés rencontrées (gestion des adresses
+    réseau sans les coder en dur, configuration sur les machines de l'IUT, version de Java
+    différente sur Charlemagne) et apports du projet en architecture répartie.
+</p>
     </article>
 </main>
 
