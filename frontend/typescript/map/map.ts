@@ -1,5 +1,6 @@
 import L from "leaflet";
-import type { VeloStationInformation } from "../types/velo";
+import { VeloStationInformation } from "../types/velo";
+import { IncidentsResponse } from "../types/incidents";
 
 /**
  * Initialisation du conteneur de la carte
@@ -30,5 +31,14 @@ export function addStationMarkers(map: any, stations: VeloStationInformation[]):
 		const marker = L.marker([station.lat, station.lon]).addTo(map);
 		console.log(`Ajout du marqueur pour la station ${station.name} à la position (${station.lat}, ${station.lon})`);
 		marker.bindPopup(`<strong>${station.name}</strong><br>${station.address}<br>Capacité : ${station.capacity}`);
+	});
+}
+
+export function addIncidentMarkers(map: any, incidents: IncidentsResponse): void {
+	incidents.incidents.forEach((incident) => {
+		const coordonnees = incident.location.polyline.split(" ").map(Number); // on split la polyline pour récupérer les coordonnées GPS de l'incident donc on récupère un tableau [latitude, longitude]
+		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
+		console.log("Ajout du marqueur pour l'incident qui a la descritpion : " + incident.description + " à la position GPS : (" + coordonnees[0], coordonnees[1] + ")");
+		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
 	});
 }

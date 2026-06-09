@@ -1,7 +1,9 @@
 import L from "leaflet";
-import { initMap } from "../map/map";
+import { initMap, addIncidentMarkers } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
+import { fetchAPIIncidents } from "../http/incidents_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
+import { INCIDENTS_API_URL, PROXY_URL } from "../config/config";
 
 
 /**
@@ -129,4 +131,8 @@ export async function renderApp(): Promise<void> {
 	}
 
 	afficherListe(stations, statuts, marqueurs, carte);
+
+	// Récupération des incidents et ajout des marqueurs sur la carte
+	const incidents = await fetchAPIIncidents(INCIDENTS_API_URL, PROXY_URL);
+	addIncidentMarkers(carte, incidents);
 }

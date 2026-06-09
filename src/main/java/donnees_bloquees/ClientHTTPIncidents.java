@@ -17,12 +17,9 @@ import java.time.Duration;
 public class ClientHTTPIncidents implements InterfaceIncidents {
 
 
-    public ClientHTTPIncidents() throws RemoteException {
-        super();
-    }
 
-    // Recuperation http
-    public String fetchAPIBloquee(String url) {
+    // client HTTP
+    public String fetchAPIBloquee(String url) throws RemoteException {
         try {
             HttpClient client = HttpClient.newBuilder()
                     .version(Version.HTTP_1_1) // permet de forcer l'utilisation de HTTP/1.1
@@ -37,24 +34,25 @@ public class ClientHTTPIncidents implements InterfaceIncidents {
                     .GET()
                     .build();
 
-            HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, BodyHandlers.ofString()); // BodyHandlers.ofString() --> indique que le corps de la réponse HTTP doit être traité comme une chaîne de caractères. | client.send(request, BodyHandlers.ofString()) --> envoie la requête HTTP et attend la réponse du serveur, qui est ensuite traitée pour extraire le corps de la réponse sous forme de chaîne de caractères, cet appel est bloquant donc le thread qui exécute cette méthode sera suspendu jusqu'à ce que la réponse soit reçue ou qu'une exception soit levée par exemple en cas de problème de réseau ou de délai d'attente dépassé
             int statusCode = response.statusCode();
             System.out.println("Code HTTP : " + statusCode);
 
             // gestion des erreurs
             if (statusCode != 200) {
                 System.err.println("Erreur HTTP : " + statusCode);
-                return null;
+                throw new RemoteException("Erreur HTTP : " + statusCode); // TODO : redemander à Ambroise si c'est ok pour lui que lui catch le RemoteException et qu'il renvoie lui un json vers le navigateur avec un message d'erreur pour que le navigateur puisse afficher un message d'erreur à l'utilisateur
             }
 
             return response.body(); // renvoie le corps de la réponse HTTP sous forme de chaîne de caractères, donc le xcontenu de l'API de traffic
 
         } catch (IOException e) {
             System.err.println("Erreur réseau : " + e.getMessage());
+            throw new RemoteException("Erreur réseau pendant l'appel à l'API incidents", e);
         } catch (InterruptedException e) {
             System.err.println("Requête interrompue");
             Thread.currentThread().interrupt();
+            throw new RemoteException("Requête interrompue", e);
         }
-        return null; // TODO : peut-être renvoyer une chaîne de caractères indiquant une erreur au lieu de null pour mieux gérer les erreurs côté client
     }
 }
