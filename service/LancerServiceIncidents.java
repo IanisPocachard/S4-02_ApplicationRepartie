@@ -1,24 +1,28 @@
-import proxy.InterfaceProxy;
-
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+import proxy.InterfaceProxy;
 
 public class LancerServiceIncidents {
-       public static void main(String[] args) {
-        try {
-            // instanciation du service de données
-            ServiceIncidents service = new ServiceIncidents();
+    public static void main(String[] args) throws RemoteException, NotBoundException {
 
-            // Enregistrement dans le registre RMI, pour le moment on ne spécifie pas de nom pour le service, on le fera plus tard donc sans paramètre ça va chercher sur localhost et sur le port par défaut 1099
-            Registry registry = LocateRegistry.getRegistry();
+        String ip = args.length > 0 ? args[0] : "localhost";
 
-            InterfaceProxy serviceProxyDistant = (InterfaceProxy) registry.lookup("proxy");
+        // instanciation du service de données
+        ServiceIncidents service = new ServiceIncidents();
 
-            serviceProxyDistant.setIncidents(service); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
-            
-        } catch (RemoteException e) {
-            System.err.println("Erreur RMI : " + e.getMessage());
-        }
+        // export de l'objet sur le réseau
+        InterfaceIncidents rd = (InterfaceIncidents) UnicastRemoteObject.exportObject(service, 0);
+
+        Registry reg = LocateRegistry.getRegistry(ip, 1099); // récupération du registre RMI du proxy distant
+
+        InterfaceProxy serviceProxyDistant = (InterfaceProxy) reg.lookup("proxy"); // on récupère le proxy distant dans le registre RMI du proxy distant
+
+        serviceProxyDistant.setIncidents(rd); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
+
+        System.out.println("Client HTTP exporté vers le proxy, prêt à recevoir les requêtes du proxy pour intéragir avec des API bloquées");
     }
 }
