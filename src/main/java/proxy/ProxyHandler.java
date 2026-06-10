@@ -21,7 +21,7 @@ class ProxyHandler implements HttpHandler {
     this.proxy = proxy;
   }
   
-  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {// TODO : nouveau param pour renvoyer soit du JSON soit du texte (content-type) + nouveau param pour le code (400 si erreur)
+  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
@@ -102,7 +102,7 @@ class ProxyHandler implements HttpHandler {
         InterfaceIncidents incidents = this.proxy.getIncidents();
 
         try {
-          String jsonBd = incidents.fetchAPIBloquee();
+          String jsonBd = incidents.fetchAPIIncidents();
           envoyerRequete(exchange, jsonBd, true);
         } catch (RemoteException e) {
           envoyerRequete(exchange, e.getMessage(), 400);
