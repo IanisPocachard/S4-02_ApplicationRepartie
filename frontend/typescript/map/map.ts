@@ -82,11 +82,21 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
  * @param map La carte
  * @param restaurants Liste des restaurants
  */
-export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[]): void {
+export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRestaurantClick? : (restaurant : Restaurant) => void): void {
 	restaurants.forEach((restaurant) => {
 		const marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
 		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
-		marker.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.adresse}`);
+		marker.bindPopup(
+			`<strong>${restaurant.nom}</strong>
+			<br>${restaurant.adresse}<br>
+			<button id="reserver-${restaurant.id}">Réserver</button>`
+		);
+
+		marker.on("popupopen", () => {
+			document.querySelector(`#reserver-${restaurant.id}`)?.addEventListener("click", () => {
+				onRestaurantClick?.(restaurant);
+			});
+		});
 	});
 }
 

@@ -1,8 +1,6 @@
 import {VeloApiIndexResponse, VeloStationInformationResponse, VeloStationStatusResponse } from "../types/velo";
+import { VELO_API_INDEX_URL, VELO_API_STATION_INFORMATION_URL, VELO_API_STATION_STATUS_URL } from "../config/config";
 
-const VELO_API_INDEX_URL = "https://api.cyclocity.fr/contracts/nancy/gbfs/v2/gbfs.json";
-const VELO_API_STATION_INFORMATION_URL = "https://api.cyclocity.fr/contracts/nancy/gbfs/v2/station_information.json";
-const VELO_API_STATION_STATUS_URL = "https://api.cyclocity.fr/contracts/nancy/gbfs/v2/station_status.json";
 
 /**
  * Récupère les informations de l'annuaire de l'api velib

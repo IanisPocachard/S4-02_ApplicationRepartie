@@ -2,10 +2,11 @@ import L from "leaflet";
 import { initMap, addIncidentMarkers, addRestaurantMarkers, addStationMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
-import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESTAURANTS_URL, PROXY_RESERVATION_URL } from "../config/config";
+import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESERVATION_URL } from "../config/config";
 import { IncidentsResponse } from "../types/incidents";
 import { fetchIncidents } from "../http/incidents_api";
-import { fetchRestaurants } from "../http/restaurants_api";
+import { fetchRestaurants, reserverRestaurant } from "../http/restaurants_api";
+import type { Restaurant, Reservation, ReservationResponse } from "../types/restaurants";
 
 /**
  * Méthode permettant de filtrer les stations non opérationnelles
@@ -48,6 +49,59 @@ function afficherListe(stations: VeloStationInformation[], statuts: Map<string, 
 		});
 		liste.appendChild(element);
 	}
+}
+
+function ouvrirFormulaireReservation(restaurant: Restaurant): void {
+	const nom = prompt("Entrez votre nom pour la réservation au restaurant " + restaurant.nom);
+	if (!nom) {
+		alert("Le nom est requis pour la réservation.");
+		return;
+	}
+
+	const prenom = prompt("De même pour votre prénom svp");
+	if (!prenom) {
+		alert("Le prénom est requis pour la réservation.");
+		return;
+	}
+
+	const telephone = prompt("Et votre numéro de téléphone ?");
+	if (!telephone) {
+		alert("Le numéro de téléphone est requis pour la réservation.");
+		return;
+	}
+
+	const nbPersonnesStr = prompt("Pour combien de personnes souhaitez-vous réserver ?");
+	const nbPersonnes = nbPersonnesStr ? parseInt(nbPersonnesStr) : NaN;
+	if (isNaN(nbPersonnes) || nbPersonnes <= 0) {
+		alert("Petit rigolo ! Rentre un nombre correct maintenant.");
+		return;
+	}
+
+	const date = prompt("Pour quelle date souhaitez-vous réserver ? (format YYYY-MM-DDTHH:mm)");
+	if (!date || isNaN(Date.parse(date))) {
+		alert("La date doit être au format YYYY-MM-DDTHH:mm je l'avais dit pourtant");
+		return;
+	}
+
+	const reservation: Reservation = {
+		idRestaurant: restaurant.id,
+		date,
+		nbPersonnes,
+		nom,
+		prenom,
+		telephone
+	};
+
+	reserverRestaurant(reservation).then((reponseServiceRestaurant: ReservationResponse) => {
+		if (reponseServiceRestaurant.status === "success") {
+			alert("La réservation a bien été prise en compte ! \n En voici les détails : " + JSON.stringify(reponseServiceRestaurant.reservation));
+		} else {
+			alert("Erreur lors de la réservation : " + reponseServiceRestaurant.message); // TODO : voir demander à Ianis s'il renvoie bien tjrs un message d'erreur dans le cas où la réservation n'a pas fonctionné
+		}
+	}).catch((error) => {
+		console.error("Erreur lors de la réservation : " + error);
+		alert("Une erreur est survenue lors de la réservation");
+	});
 }
 
 /**
@@ -94,15 +148,15 @@ export async function renderApp(): Promise<void> {
 	}
 
 	try {
-		const incidentsRep = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
+		const incidentsRep : IncidentsResponse = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch (error) {
 		console.error("Erreur lors du chargement des incidents" + error);
 	}
 
 	try {
-		const restaurants = await fetchRestaurants();
-		addRestaurantMarkers(carte, restaurants);
+		const restaurants : Restaurant[] = await fetchRestaurants();
+		addRestaurantMarkers(carte, restaurants, ouvrirFormulaireReservation);
 	} catch (error) {
 		console.error("Erreur lors du chargement des restaurants : " + error);
 	}
