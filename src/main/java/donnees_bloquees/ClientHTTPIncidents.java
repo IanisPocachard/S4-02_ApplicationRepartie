@@ -17,9 +17,10 @@ import java.time.Duration;
 public class ClientHTTPIncidents implements InterfaceIncidents {
 
 
+    final String urlAPIIncidents = "https://carto.g-ny.eu/data/cifs/cifs_waze_v2.json";
 
     // client HTTP
-    public String fetchAPIBloquee(String url) throws RemoteException {
+    public String fetchAPIIncidents() throws RemoteException {
         try {
             HttpClient client = HttpClient.newBuilder()
                     .version(Version.HTTP_1_1) // permet de forcer l'utilisation de HTTP/1.1
@@ -30,7 +31,7 @@ public class ClientHTTPIncidents implements InterfaceIncidents {
                     .build(); // permet de construire le client HTTP avec les paramètres spécifiés juste au dessus
 
             HttpRequest request = HttpRequest.newBuilder() // on construit ensuite la requete HTTP vers l'URL de l'API de traffic
-                    .uri(URI.create(url))
+                    .uri(URI.create(urlAPIIncidents))
                     .GET()
                     .build();
 
