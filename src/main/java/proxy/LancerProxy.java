@@ -8,7 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 class LancerProxy {
     public static void main (String[] args) {
-        InterfaceProxy proxy = new Proxy();
+        Proxy proxy = new Proxy();
 
         try {
             InterfaceProxy interfaceProxy = (InterfaceProxy) UnicastRemoteObject.exportObject(proxy, 0);
