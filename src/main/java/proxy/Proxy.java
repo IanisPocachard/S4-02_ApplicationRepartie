@@ -3,6 +3,8 @@ package proxy;
 import com.sun.net.httpserver.HttpServer;
 
 import java.net.InetSocketAddress;
+import java.rmi.RemoteException;
+
 import donnees_bloquees.InterfaceIncidents;
 import database_service.ServiceDatabase;
 
@@ -20,7 +22,7 @@ public class Proxy implements InterfaceProxy {
     if (this.isRestaurantReady) this.lancerServeurHttp();
   }
   
-  public void setRestaurant(ServiceDatabase restaurant) {
+  public void setRestaurant(ServiceDatabase restaurant) throws RemoteException {
     this.restaurant = restaurant;
     this.isRestaurantReady = true;
     if (this.isIncidentReady) this.lancerServeurHttp();

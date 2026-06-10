@@ -82,7 +82,7 @@ Note : Les opérations suivantes sont conçues pour un environnement Linux (mach
 
 Étape 1 : Préparation de la base de données
 
-Renseigner les identifiants Oracle (Charlemagne) dans le fichier src/java/database_service/Credentials.java.
+Renseigner les identifiants Oracle (Charlemagne) dans le fichier src/java/database_service/database_service.Credentials.java.
 
 Exécuter le script database.sql pour initialiser le schéma et le jeu d'essai.
 

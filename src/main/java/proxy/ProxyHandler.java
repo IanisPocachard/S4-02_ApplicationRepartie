@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import donnees_bloquees.InterfaceIncidents;
@@ -20,8 +21,13 @@ class ProxyHandler implements HttpHandler {
     this.proxy = proxy;
   }
   
-  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {// TODO : nouveau param pour renvoyer soit du JSON soit du texte (content-type) + nouveau param pour le code (400 si erreur)
-    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
+  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {
+    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
     try (OutputStream os = exchange.getResponseBody()) { //exchange.getResponseBody() --> récupère le flux de sortie associé à la réponse HTTP. c’est dans ce flux qu’on écrit le contenu envoyé au client.
@@ -31,6 +37,11 @@ class ProxyHandler implements HttpHandler {
 
   public void envoyerRequete(HttpExchange exchange, String response, int status) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
@@ -41,6 +52,11 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
@@ -51,6 +67,11 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
@@ -64,7 +85,7 @@ class ProxyHandler implements HttpHandler {
     //pour l'instant j'affiche juste la requête du client | TODO --> call rmi en fonction de la requête du client.
     String clientAddress = exchange.getRemoteAddress().toString();
 
-    System.out.println("-----"+clientAddress+"-----");
+    System.out.println("-------------------- CONNEXION DE : "+clientAddress+" --------------------");
     System.out.println(exchange.getRequestMethod() + " " + exchange.getRequestURI() + " " + exchange.getProtocol());
 
     for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
@@ -72,34 +93,58 @@ class ProxyHandler implements HttpHandler {
             System.out.println(entry.getKey() + ": " + value);
         }
     }
-    
+
+
     String uri = String.valueOf(exchange.getRequestURI());
+    System.out.println();
+    System.out.println("URI: " + uri);
     if (uri.startsWith("/api")) {
+      System.out.println("l'endpoint /api est appelé");
       String endpoint = uri.substring(4);
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
-        String endpoint = uri.substring(3);
+        System.out.println("l'endpoint /api/bd est appelé");
+        endpoint = uri.substring(3);
         ServiceDatabase restaurant = this.proxy.getRestaurants();
         if (endpoint.startsWith("/restaurants")) {
-          String jsonBd = restaurant.getCoordonneesRestaurants();
-          envoyerRequete(exchange, jsonBd, true);
+          System.out.println("l'endpoint /api/bd/restaurants est appelé");
+          try {
+            String jsonBd = restaurant.getCoordonneesRestaurants();
+            envoyerRequete(exchange, jsonBd, true);
+          } catch (RemoteException e) {
+            System.out.println("l'appel RMI pour récupérer les coordonées des restaurants a échoué avec l'erreur : "+e.getMessage());
+            envoyerRequete(exchange, e.getMessage(), 400);
+          }
+
         } else if (endpoint.startsWith("/reserver")) {
+          System.out.println("l'endpoint /api/bd/reserver est appelé");
+
           //recupérer les infos depuis les params POST de la requête
           
           //String jsonBd = restaurant.reserverTable();
           //envoyerRequete(exchange, jsonBd, true);
         } else {
+          System.out.println("l'endpoint est invalide : il commance par /api/bd mais ne fini pas par 'restaurants' ou 'reserver'");
           envoyerRequete(exchange, "erreur : endpoint non valide", 400);
         }
       } else if (endpoint.startsWith("/incidents")) {
+        System.out.println("l'endpoint /api/incidents est appelé");
         InterfaceIncidents incidents = this.proxy.getIncidents();
-        String jsonBd = incidents.fetchAPIBloquee();
-        envoyerRequete(exchange, jsonBd, true);
+
+        try {
+          String jsonBd = incidents.fetchAPIIncidents();
+          envoyerRequete(exchange, jsonBd, true);
+        } catch (RemoteException e) {
+          System.out.println("l'appel RMI pour récupérer les incidents a échoué avec l'erreur : "+e.getMessage());
+          envoyerRequete(exchange, e.getMessage(), 400);
+        }
+
       } else {
-        System.out.println("/api/bd/...  || /api/data/...");
+        System.out.println("le client a utilisé l'endpoint /api mais n'a pas utilisé /api/bd/... ou /api/data/...");
         envoyerRequete(exchange, "erreur : endpoint non valide", 400);
       }
     } else {
+      System.out.println("l'endpoint /api n'est pas appelé");
       String response = "Reponse Test depuis le serveur HTTP";
       envoyerRequete(exchange, response);
     }

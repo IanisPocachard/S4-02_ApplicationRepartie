@@ -41,7 +41,7 @@ public class Client {
 
         try {
             String res1 = service.reserverTable(
-                    r1,
+                    r1.getId(),
                     date,
                     2,
                     "Dupont",
@@ -61,7 +61,7 @@ public class Client {
 
         try {
             String res2 = service.reserverTable(
-                    r1,
+                    r1.getId(),
                     date,
                     2,
                     "Martin",
@@ -81,7 +81,7 @@ public class Client {
 
         try {
             String res3 = service.reserverTable(
-                    r1,
+                    r1.getId(),
                     LocalDateTime.of(2026, 6, 10, 20, 30),
                     50,
                     "Big",
@@ -115,7 +115,7 @@ public class Client {
 
             try {
                 String result = service.reserverTable(
-                        r1,
+                        r1.getId(),
                         LocalDateTime.of(2026, 6, 11, 19, 0),
                         2,
                         "User" + i,
