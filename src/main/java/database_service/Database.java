@@ -68,6 +68,25 @@ public class Database implements ServiceDatabase {
         }
     }
 
+    public void chargerTables(String fichier) throws IOException {
+        TableRestaurant.dropAll();
+
+        String contenu = Files.readString(Path.of(fichier));
+        JSONArray jsonArray = new JSONArray(contenu);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject obj = jsonArray.getJSONObject(i);
+
+            TableRestaurant table = new TableRestaurant(
+                    obj.getInt("id"),
+                    obj.getInt("capacite"),
+                    obj.getInt("restaurantId")
+            );
+
+            table.insert();
+        }
+    }
+
     public Connection getConnection() {
         return connection;
     }
