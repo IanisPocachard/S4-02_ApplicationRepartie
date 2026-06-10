@@ -39,7 +39,7 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
 	incidents.forEach((incident) => {
 		const coordonnees = incident.location.polyline.split(" ").map(Number); // on split la polyline pour récupérer les coordonnées GPS de l'incident donc on récupère un tableau [latitude, longitude]
 		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
-		console.log("Ajout du marqueur pour l'incident qui a la descritpion : " + incident.description + " à la position GPS : (" + coordonnees[0], coordonnees[1] + ")");
+		console.log("Ajout du marqueur pour l'incident qui a la description : " + incident.description + " à la position GPS : (" + coordonnees[0] + ", " + coordonnees[1] + ")");
 		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
 	});
 }
