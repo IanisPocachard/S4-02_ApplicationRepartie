@@ -1,0 +1,68 @@
+[
+  { "id": 1, "capacite": 2, "restaurantId": 1 },
+  { "id": 2, "capacite": 4, "restaurantId": 1 },
+  { "id": 3, "capacite": 6, "restaurantId": 1 },
+
+  { "id": 4, "capacite": 2, "restaurantId": 2 },
+  { "id": 5, "capacite": 4, "restaurantId": 2 },
+  { "id": 6, "capacite": 8, "restaurantId": 2 },
+
+  { "id": 7, "capacite": 2, "restaurantId": 3 },
+  { "id": 8, "capacite": 4, "restaurantId": 3 },
+  { "id": 9, "capacite": 4, "restaurantId": 3 },
+  { "id": 10, "capacite": 6, "restaurantId": 3 },
+
+  { "id": 11, "capacite": 2, "restaurantId": 4 },
+  { "id": 12, "capacite": 4, "restaurantId": 4 },
+  { "id": 13, "capacite": 8, "restaurantId": 4 },
+
+  { "id": 14, "capacite": 2, "restaurantId": 5 },
+  { "id": 15, "capacite": 2, "restaurantId": 5 },
+  { "id": 16, "capacite": 4, "restaurantId": 5 },
+
+  { "id": 17, "capacite": 4, "restaurantId": 6 },
+  { "id": 18, "capacite": 6, "restaurantId": 6 },
+  { "id": 19, "capacite": 8, "restaurantId": 6 },
+
+  { "id": 20, "capacite": 2, "restaurantId": 7 },
+  { "id": 21, "capacite": 4, "restaurantId": 7 },
+  { "id": 22, "capacite": 6, "restaurantId": 7 },
+  { "id": 23, "capacite": 8, "restaurantId": 7 },
+
+  { "id": 24, "capacite": 2, "restaurantId": 8 },
+  { "id": 25, "capacite": 4, "restaurantId": 8 },
+  { "id": 26, "capacite": 4, "restaurantId": 8 },
+
+  { "id": 27, "capacite": 2, "restaurantId": 9 },
+  { "id": 28, "capacite": 4, "restaurantId": 9 },
+  { "id": 29, "capacite": 6, "restaurantId": 9 },
+
+  { "id": 30, "capacite": 2, "restaurantId": 10 },
+  { "id": 31, "capacite": 4, "restaurantId": 10 },
+  { "id": 32, "capacite": 8, "restaurantId": 10 },
+
+  { "id": 33, "capacite": 2, "restaurantId": 11 },
+  { "id": 34, "capacite": 2, "restaurantId": 11 },
+  { "id": 35, "capacite": 4, "restaurantId": 11 },
+
+  { "id": 36, "capacite": 4, "restaurantId": 12 },
+  { "id": 37, "capacite": 6, "restaurantId": 12 },
+  { "id": 38, "capacite": 8, "restaurantId": 12 },
+
+  { "id": 39, "capacite": 2, "restaurantId": 13 },
+  { "id": 40, "capacite": 4, "restaurantId": 13 },
+  { "id": 41, "capacite": 6, "restaurantId": 13 },
+
+  { "id": 42, "capacite": 2, "restaurantId": 14 },
+  { "id": 43, "capacite": 4, "restaurantId": 14 },
+  { "id": 44, "capacite": 6, "restaurantId": 14 },
+
+  { "id": 45, "capacite": 2, "restaurantId": 15 },
+  { "id": 46, "capacite": 4, "restaurantId": 15 },
+  { "id": 47, "capacite": 8, "restaurantId": 15 },
+
+  { "id": 48, "capacite": 2, "restaurantId": 16 },
+  { "id": 49, "capacite": 4, "restaurantId": 16 },
+  { "id": 50, "capacite": 6, "restaurantId": 16 },
+  { "id": 51, "capacite": 8, "restaurantId": 16 }
+]
