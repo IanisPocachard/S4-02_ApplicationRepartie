@@ -75,6 +75,24 @@ export async function renderApp(): Promise<void> {
 
 	afficherListe(stations, statuts, marqueurs, carte);
 
+	const searchInput = document.getElementById("search") as HTMLInputElement;
+
+	if (searchInput) {
+		searchInput.addEventListener("input", (event) => {
+			// Récupérer le texte tapé et le mettre en minuscules
+			const texteRecherche = (event.target as HTMLInputElement).value.toLowerCase();
+
+			// Filtrer les stations dont le nom ou l'adresse contient le texte recherché
+			const stationsFiltrees = stations.filter(station =>
+				station.name.toLowerCase().includes(texteRecherche) ||
+				station.address.toLowerCase().includes(texteRecherche)
+			);
+
+			// Mettre à jour l'affichage de la liste avec les résultats filtrés
+			afficherListe(stationsFiltrees, statuts, marqueurs, carte);
+		});
+	}
+
 	try {
 		const incidentsRep = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
