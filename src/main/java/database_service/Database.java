@@ -1,10 +1,16 @@
 package database_service;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,6 +44,28 @@ public class Database implements ServiceDatabase {
             instance = new Database(identifiant, mdp);
         }
         return instance;
+    }
+
+    public void chargerRestaurants(String fichier) throws IOException {
+        Restaurant.dropAll();
+
+        String contenu = Files.readString(Path.of(fichier));
+
+        JSONArray jsonArray = new JSONArray(contenu);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject obj = jsonArray.getJSONObject(i);
+
+            Restaurant r = new Restaurant(
+                    obj.getInt("id"),
+                    obj.getString("nom"),
+                    obj.getString("adresse"),
+                    obj.getDouble("latitude"),
+                    obj.getDouble("longitude")
+            );
+
+            r.insert();
+        }
     }
 
     public Connection getConnection() {

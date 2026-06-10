@@ -27,7 +27,7 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "database_service.Restaurant{" +
+        return "Restaurant{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
                 ", adresse='" + adresse + '\'' +
@@ -150,6 +150,66 @@ public class Restaurant {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public void insert() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = """
+            INSERT INTO Restaurant (id, nom, adresse, latitude, longitude)
+            VALUES (?, ?, ?, ?, ?)
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            statement.setString(2, nom);
+            statement.setString(3, adresse);
+            statement.setDouble(4, latitude);
+            statement.setDouble(5, longitude);
+
+            statement.executeUpdate();
+
+            connection.commit();
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void dropAll() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = "DELETE FROM Restaurant";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.executeUpdate();
+
+            connection.commit();
+
+        } catch (SQLException e) {
+
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+
+            e.printStackTrace();
         }
     }
 }
