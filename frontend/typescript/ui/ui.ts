@@ -1,10 +1,11 @@
 import L from "leaflet";
 import { initMap, addIncidentMarkers, addRestaurantMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
-import { fetchAPIIncidents } from "../http/incidents_api";
-import { fetchAPIRestaurants } from "../http/restaurants_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 import { INCIDENTS_API_URL, RESTAURANTS_API_URL, PROXY_URL } from "../config/config";
+import { fetchAPIBloque } from "../http/fetch_api_bloque";
+import { IncidentsResponse } from "../types/incidents";
+import { RestaurantsResponse } from "../types/restaurants";
 
 
 
@@ -109,14 +110,14 @@ export async function renderApp(): Promise<void> {
 
 	try {
 		// Récupération des incidents et ajout des marqueurs sur la carte
-		const incidentsRep = await fetchAPIIncidents(INCIDENTS_API_URL, PROXY_URL);
+		const incidentsRep = await fetchAPIBloque<IncidentsResponse>(INCIDENTS_API_URL, PROXY_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch(error) {
 		console.error("Erreur lors du chargement des incidents" + error);
 	}
 
 	try {
-		const restaurantsRep = await fetchAPIRestaurants(RESTAURANTS_API_URL, PROXY_URL);
+		const restaurantsRep = await fetchAPIBloque<RestaurantsResponse>(RESTAURANTS_API_URL, PROXY_URL);
 		addRestaurantMarkers(carte, restaurantsRep.restaurants);
 	} catch(error) {
 		console.error("Erreur lors du changement des restaurants : " + error);
