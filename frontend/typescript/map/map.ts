@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { VeloStationInformation } from "../types/velo";
+import { VeloStationInformation, VeloStationStatus } from "../types/velo";
 import { Incident } from "../types/incidents";
 import { Restaurant } from "../types/restaurants";
 
@@ -9,9 +9,6 @@ import { Restaurant } from "../types/restaurants";
  * @returns La carte
  */
 export function initMap(container: HTMLElement): any {
-	container.style.height = "500px";
-	container.style.width = "100%";
-
 	const map = L.map(container).setView([48.6921, 6.1844], 13);
 
 	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -23,16 +20,52 @@ export function initMap(container: HTMLElement): any {
 }
 
 /**
- * Crée sur la carte les marqeurs à chaque station vélib
+ * Construction d'une pop-up de station de velib
+ * @param info Les informations d'une station
+ * @param statut Le statut de la station
+ * @returns une fenetre pop-up détaillant la station
+ */
+export function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | undefined): string {
+	const velos = statut?.num_bikes_available ?? "?";
+	const places = statut?.num_docks_available ?? "?";
+	return `
+		<strong>${info.name}</strong><br>
+		${info.address}<br>
+		Vélos disponibles : <b>${velos}</b><br>
+		Places libres : <b>${places}</b><br>
+		Capacité : ${info.capacity}<br>
+	`;
+}
+
+/**
+ * Crée sur la carte un marqueur pour chaque station vélib opérationnelle,
+ * avec une icône colorée selon le nombre de vélos et une pop-up détaillée.
  * @param map La carte
  * @param stations Liste des stations avec toutes les infos
+ * @param statuts Les statuts des stations indexés par station_id
+ * @param filtre Prédicat optionnel : si true pour un statut, la station est ignorée
+ * @returns Une Map des marqueurs créés, indexés par station_id (pour les ouvrir depuis la liste)
  */
-export function addStationMarkers(map: any, stations: VeloStationInformation[]): void {
-	stations.forEach((station) => {
-		const marker = L.marker([station.lat, station.lon]).addTo(map);
-		console.log(`Ajout du marqueur pour la station ${station.name} à la position (${station.lat}, ${station.lon})`);
-		marker.bindPopup(`<strong>${station.name}</strong><br>${station.address}<br>Capacité : ${station.capacity}`);
-	});
+export function addStationMarkers(
+	map: L.Map,
+	stations: VeloStationInformation[],
+	statuts: Map<string, VeloStationStatus>,
+	filtre?: (statut: VeloStationStatus) => boolean,
+): Map<string, L.Marker> {
+	const marqueurs = new Map<string, L.Marker>();
+
+	for (const station of stations) {
+		const statut = statuts.get(station.station_id);
+		if (statut && filtre?.(statut)) continue;
+
+		const velos = statut?.num_bikes_available ?? 0;
+		const marqueur = L.marker([station.lat, station.lon], { icon: icone(velos) })
+			.addTo(map)
+			.bindPopup(popupContenu(station, statut));
+		marqueurs.set(station.station_id, marqueur);
+	}
+
+	return marqueurs;
 }
 
 export function addIncidentMarkers(map: any, incidents: Incident[]): void {
@@ -57,7 +90,6 @@ export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[]): voi
 	});
 }
 
-
 /**
  * Gestion de la couleur d'affichage des balises sur la carte en fonction du nombre de vélos dispo
  * - Rouge : aucun vélo
@@ -71,9 +103,6 @@ export function couleur(velos: number): string {
 	if (velos <= 3) return "#f59e0b";
 	return "#22c55e";
 }
-
-
-
 
 /**
  * Construction d'un icon
