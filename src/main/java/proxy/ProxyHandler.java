@@ -78,12 +78,22 @@ class ProxyHandler implements HttpHandler {
       String endpoint = uri.substring(4);
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
-          ServiceDatabase restaurant = this.proxy.getRestaurants();
-        String jsonBd = restaurant.getCoordonneesRestaurants();
-        envoyerRequete(exchange, jsonBd, true);
-      } else if (endpoint.startsWith("/data")) {
+        String endpoint = uri.substring(3);
+        ServiceDatabase restaurant = this.proxy.getRestaurants();
+        if (endpoint.startsWith("/restaurants")) {
+          String jsonBd = restaurant.getCoordonneesRestaurants();
+          envoyerRequete(exchange, jsonBd, true);
+        } else if (endpoint.startsWith("/reserver")) {
+          //recupérer les infos depuis les params POST de la requête
+          
+          //String jsonBd = restaurant.reserverTable();
+          //envoyerRequete(exchange, jsonBd, true);
+        } else {
+          envoyerRequete(exchange, "erreur : endpoint non valide", 400);
+        }
+      } else if (endpoint.startsWith("/incidents")) {
         InterfaceIncidents incidents = this.proxy.getIncidents();
-        String jsonBd = incidents.fetchAPIBloquee("url api bloquée (incident)"); // TODO : modifier pour fetch vers la bonne url passée par le frontend
+        String jsonBd = incidents.fetchAPIBloquee();
         envoyerRequete(exchange, jsonBd, true);
       } else {
         System.out.println("/api/bd/...  || /api/data/...");

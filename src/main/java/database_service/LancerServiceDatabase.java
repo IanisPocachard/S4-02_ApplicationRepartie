@@ -8,16 +8,29 @@ import java.rmi.server.UnicastRemoteObject;
 public class LancerServiceDatabase {
     public static void main(String[] args) {
 
-        String jsonFile = "restaurants.json";
+        String usage = "Usage: java LancerServiceDatabase [restaurant_json_file] [tables_json_file]";
+
+        String jsonFileRestaurant = "restaurants.json";
+        String jsonFileTables = "tables_restaurant.json";
+
+        if (args.length == 0) System.out.println(usage);
         if (args.length > 0) {
-            jsonFile = args[0];
+            jsonFileRestaurant = args[0];
+        }
+        if (args.length > 1) {
+            jsonFileTables = args[1];
         }
 
         Database database = Database.getInstance(Credentials.USERNAME, Credentials.PASSWORD);
         try {
-            database.chargerRestaurants(jsonFile);
+            database.chargerRestaurants(jsonFileRestaurant);
         } catch (IOException e) {
-            System.err.println("Erreur : fichier non trouvé " + jsonFile + "\n" + e.getMessage());
+            System.err.println("Erreur : fichier non trouvé " + jsonFileRestaurant + "\n" + e.getMessage());
+        }
+        try {
+            database.chargerTables(jsonFileTables);
+        } catch (IOException e) {
+            System.err.println("Erreur : fichier non trouvé " + jsonFileTables + "\n" + e.getMessage());
         }
 
         try {

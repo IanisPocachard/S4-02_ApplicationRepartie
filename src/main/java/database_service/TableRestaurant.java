@@ -172,4 +172,59 @@ public class TableRestaurant {
 
         return null;
     }
+
+    public void insert() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = """
+            INSERT INTO TableRestaurant (id, capacite, id_restaurant)
+            VALUES (?, ?, ?)
+        """;
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setInt(1, id);
+            statement.setInt(2, capacite);
+            statement.setInt(3, restaurant.getId());
+
+            statement.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+
+            e.printStackTrace();
+        }
+    }
+
+    public static void dropAll() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = "DELETE FROM TableRestaurant";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.executeUpdate();
+            connection.commit();
+
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+
+            e.printStackTrace();
+        }
+    }
 }
