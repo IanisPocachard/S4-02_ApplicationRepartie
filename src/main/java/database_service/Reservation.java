@@ -193,4 +193,30 @@ public class Reservation {
             }
         }
     }
+
+    public static void dropAll() {
+        Connection connection = Database.getInstance(
+                Credentials.USERNAME,
+                Credentials.PASSWORD
+        ).getConnection();
+
+        String sql = "DELETE FROM Reservation";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.executeUpdate();
+
+            connection.commit();
+
+        } catch (SQLException e) {
+
+            try {
+                connection.rollback();
+            } catch (SQLException rollbackException) {
+                rollbackException.printStackTrace();
+            }
+
+            e.printStackTrace();
+        }
+    }
 }

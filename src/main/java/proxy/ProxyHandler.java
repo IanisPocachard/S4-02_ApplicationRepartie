@@ -24,9 +24,9 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse
 
-    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
@@ -38,9 +38,9 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response, int status) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
 
-    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -53,13 +53,13 @@ class ProxyHandler implements HttpHandler {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
-    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
 
-    try (OutputStream os = exchange.getResponseBody()) { 
+    try (OutputStream os = exchange.getResponseBody()) {
       os.write(response.getBytes(StandardCharsets.UTF_8));
     }
   }
@@ -68,9 +68,9 @@ class ProxyHandler implements HttpHandler {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
-    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
-    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -104,7 +104,7 @@ class ProxyHandler implements HttpHandler {
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
         System.out.println("[PROXYHANDLER] l'endpoint /api/bd est appelé");
-        endpoint = uri.substring(3);
+        endpoint = endpoint.substring(3);
         ServiceDatabase restaurant = this.proxy.getRestaurants();
 
         if (restaurant == null) {

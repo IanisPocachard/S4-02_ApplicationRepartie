@@ -47,8 +47,6 @@ public class Database implements ServiceDatabase {
     }
 
     public void chargerRestaurants(String fichier) throws IOException {
-        Restaurant.dropAll();
-
         String contenu = Files.readString(Path.of(fichier));
 
         JSONArray jsonArray = new JSONArray(contenu);
@@ -69,9 +67,8 @@ public class Database implements ServiceDatabase {
     }
 
     public void chargerTables(String fichier) throws IOException {
-        TableRestaurant.dropAll();
-
         String contenu = Files.readString(Path.of(fichier));
+
         JSONArray jsonArray = new JSONArray(contenu);
 
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -93,13 +90,12 @@ public class Database implements ServiceDatabase {
 
     @Override
     public String getCoordonneesRestaurants() {
-
         ArrayList<Restaurant> restaurants = Restaurant.readAll();
 
         JSONArray jsonArray = new JSONArray();
 
         for (Restaurant restaurant : restaurants) {
-            jsonArray.put(new JSONObject(restaurant.toJson()));
+            jsonArray.put(restaurant.toJson());
         }
 
         return jsonArray.toString();

@@ -53,7 +53,7 @@ export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[]): voi
 	restaurants.forEach((restaurant) => {
 		const marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
 		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
-		marker.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.addresse}`);
+		marker.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.adresse}`);
 	});
 }
 

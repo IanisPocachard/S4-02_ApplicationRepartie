@@ -8,7 +8,7 @@ export const VELO_API_FEEDS = {
 
 export const INCIDENTS_API_URL = "https://carto.g-ny.eu/data/cifs/cifs_waze_v2.json";
 
-export const PROXY_BASE_URL = "localhost:8080http://localhost:8080"; // TODO à remplir avec l'URL du proxy d'Ambroise au moment où il sera lancé sur un pc de la salle on ne sait pas l'IP à l'avance
+export const PROXY_BASE_URL = "http://localhost:8080"; // TODO à remplir avec l'URL du proxy d'Ambroise au moment où il sera lancé sur un pc de la salle on ne sait pas l'IP à l'avance
 
 export const PROXY_INCIDENTS_URL = PROXY_BASE_URL ? `${PROXY_BASE_URL}/api/data/incidents` : "";
 export const PROXY_RESTAURANTS_URL = PROXY_BASE_URL ? `${PROXY_BASE_URL}/api/bd/restaurants` : "";

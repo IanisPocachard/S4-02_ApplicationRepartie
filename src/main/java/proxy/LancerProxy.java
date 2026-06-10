@@ -20,7 +20,5 @@ class LancerProxy {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("Proxy lancé !");
     }
 }
