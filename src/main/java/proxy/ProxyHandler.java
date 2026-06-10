@@ -21,7 +21,7 @@ class ProxyHandler implements HttpHandler {
     this.proxy = proxy;
   }
   
-  public void envoyerRequete(HttpExchange exchange, String response) throws IOException {
+  public void envoyerReponse(HttpExchange exchange, String response) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -35,7 +35,7 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
-  public void envoyerRequete(HttpExchange exchange, String response, int status) throws IOException {
+  public void envoyerReponse(HttpExchange exchange, String response, int status) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
@@ -49,7 +49,7 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
-  public void envoyerRequete(HttpExchange exchange, String response, boolean isJson) throws IOException {
+  public void envoyerReponse(HttpExchange exchange, String response, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
@@ -64,7 +64,7 @@ class ProxyHandler implements HttpHandler {
     }
   }
 
-  public void envoyerRequete(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
+  public void envoyerReponse(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
@@ -85,6 +85,7 @@ class ProxyHandler implements HttpHandler {
     //pour l'instant j'affiche juste la requête du client | TODO --> call rmi en fonction de la requête du client.
     String clientAddress = exchange.getRemoteAddress().toString();
 
+    System.out.println();
     System.out.println("[PROXYHANDLER] -------------------- CONNEXION DE : "+clientAddress+" --------------------");
     System.out.println("[PROXYHANDLER] "+exchange.getRequestMethod() + " " + exchange.getRequestURI() + " " + exchange.getProtocol());
 
@@ -109,17 +110,17 @@ class ProxyHandler implements HttpHandler {
 
         if (restaurant == null) {
           System.out.println("[PROXYHANDLER] Le service RMI pour de gestion de BD n'est pas enregistré au près du proxy");
-          envoyerRequete(exchange, "erreur : le service RMI de base de données n'est pas disponible", 400);
+          envoyerReponse(exchange, "erreur : le service RMI de base de données n'est pas disponible", 400);
         } else {
 
           if (endpoint.startsWith("/restaurants")) {
             System.out.println("[PROXYHANDLER] l'endpoint /api/bd/restaurants est appelé");
             try {
               String jsonBd = restaurant.getCoordonneesRestaurants();
-              envoyerRequete(exchange, jsonBd, true);
+              envoyerReponse(exchange, jsonBd, true);
             } catch (RemoteException e) {
               System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les coordonées des restaurants a échoué avec l'erreur : "+e.getMessage());
-              envoyerRequete(exchange, e.getMessage(), 400);
+              envoyerReponse(exchange, e.getMessage(), 400);
             }
 
           } else if (endpoint.startsWith("/reserver")) {
@@ -128,10 +129,10 @@ class ProxyHandler implements HttpHandler {
             //recupérer les infos depuis les params POST de la requête
 
             //String jsonBd = restaurant.reserverTable();
-            //envoyerRequete(exchange, jsonBd, true);
+            //envoyerReponse(exchange, jsonBd, true);
           } else {
             System.out.println("[PROXYHANDLER] l'endpoint est invalide : il commance par /api/bd mais ne fini pas par 'restaurants' ou 'reserver'");
-            envoyerRequete(exchange, "erreur : endpoint non valide", 400);
+            envoyerReponse(exchange, "erreur : endpoint non valide", 400);
           }
 
         }
@@ -142,25 +143,28 @@ class ProxyHandler implements HttpHandler {
 
         if (incidents == null) {
           System.out.println("[PROXYHANDLER] Le service RMI pour de contournement de l'erreur CORS n'est pas enregistré au près du proxy");
-          envoyerRequete(exchange, "erreur : le service RMI pour les données bloquées n'est pas disponible", 400);
+          envoyerReponse(exchange, "erreur : le service RMI pour les données bloquées n'est pas disponible", 400);
         } else {
           try {
-            String jsonBd = incidents.fetchAPIIncidents();
-            envoyerRequete(exchange, jsonBd, true);
+            System.out.println("[TEST] Avant appel RMI pour récupérer les incidents");
+            String jsonIncidents = incidents.fetchAPIIncidents();
+            System.out.println("[TEST] Après appel RMI pour récupérer les incidents");
+
+            envoyerReponse(exchange, jsonIncidents, true);
           } catch (RemoteException e) {
             System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les incidents a échoué avec l'erreur : "+e.getMessage());
-            envoyerRequete(exchange, e.getMessage(), 400);
+            envoyerReponse(exchange, e.getMessage(), 400);
           }
         }
 
       } else {
-        System.out.println("[PROXYHANDLER] le client a utilisé l'endpoint /api mais n'a pas utilisé /api/bd/... ou /api/data/...");
-        envoyerRequete(exchange, "erreur : endpoint non valide", 400);
+        System.out.println("[PROXYHANDLER] le client a utilisé l'endpoint /api mais n'a pas utilisé /api/bd/... ou /api/incidents/...");
+        envoyerReponse(exchange, "erreur : endpoint non valide", 400);
       }
     } else {
       System.out.println("[PROXYHANDLER] l'endpoint /api n'est pas appelé");
       String response = "Reponse Test depuis le serveur HTTP";
-      envoyerRequete(exchange, response);
+      envoyerReponse(exchange, response);
     }
     
   }
