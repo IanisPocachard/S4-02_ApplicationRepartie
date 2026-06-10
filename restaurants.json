@@ -1,0 +1,114 @@
+[
+  {
+    "id": 1,
+    "nom": "Le Grand Café de la Place",
+    "adresse": "2 Place Stanislas, 54000 Nancy",
+    "latitude": 48.6936,
+    "longitude": 6.1832
+  },
+  {
+    "id": 2,
+    "nom": "L'Excelsior",
+    "adresse": "50 Rue Henri Poincaré, 54000 Nancy",
+    "latitude": 48.6912,
+    "longitude": 6.1764
+  },
+  {
+    "id": 3,
+    "nom": "La Table du Bon Roi Stanislas",
+    "adresse": "7 Rue Gustave Simon, 54000 Nancy",
+    "latitude": 48.6939,
+    "longitude": 6.1815
+  },
+  {
+    "id": 4,
+    "nom": "Le Grenier à Sel",
+    "adresse": "28 Place de la Carrière, 54000 Nancy",
+    "latitude": 48.6957,
+    "longitude": 6.1823
+  },
+  {
+    "id": 5,
+    "nom": "A la Table des Bons Pères",
+    "adresse": "4 Rue de la Source, 54000 Nancy",
+    "latitude": 48.6928,
+    "longitude": 6.1841
+  },
+  {
+    "id": 6,
+    "nom": "Le Capucin Gourmand",
+    "adresse": "31 Rue de la Primatiale, 54000 Nancy",
+    "latitude": 48.6905,
+    "longitude": 6.1868
+  },
+  {
+    "id": 7,
+    "nom": "Les Frères Marchand",
+    "adresse": "93 Grande Rue, 54000 Nancy",
+    "latitude": 48.6963,
+    "longitude": 6.1798
+  },
+  {
+    "id": 8,
+    "nom": "Le Simplexe",
+    "adresse": "1 Rue de la Primatiale, 54000 Nancy",
+    "latitude": 48.6902,
+    "longitude": 6.1864
+  },
+  {
+    "id": 9,
+    "nom": "Vins et Tartines",
+    "adresse": "25 Rue des Ponts, 54000 Nancy",
+    "latitude": 48.6891,
+    "longitude": 6.1835
+  },
+  {
+    "id": 10,
+    "nom": "Le Bouche à Oreille",
+    "adresse": "42 Rue des Carmes, 54000 Nancy",
+    "latitude": 48.6918,
+    "longitude": 6.1802
+  },
+  {
+    "id": 11,
+    "nom": "La Grange",
+    "adresse": "36 Rue Saint-Nicolas, 54000 Nancy",
+    "latitude": 48.6888,
+    "longitude": 6.1861
+  },
+  {
+    "id": 12,
+    "nom": "Le Comptoir de l'Opéra",
+    "adresse": "10 Rue Sainte-Catherine, 54000 Nancy",
+    "latitude": 48.6942,
+    "longitude": 6.1853
+  },
+  {
+    "id": 13,
+    "nom": "Bistrot de La Benoîte",
+    "adresse": "3 Place de la Commanderie, 54000 Nancy",
+    "latitude": 48.6875,
+    "longitude": 6.1689
+  },
+  {
+    "id": 14,
+    "nom": "Madame",
+    "adresse": "10 Rue des Maréchaux, 54000 Nancy",
+    "latitude": 48.6946,
+    "longitude": 6.1811
+  },
+  {
+    "id": 15,
+    "nom": "Le Pinocchio",
+    "adresse": "12 Rue des Maréchaux, 54000 Nancy",
+    "latitude": 48.6947,
+    "longitude": 6.1812
+  },
+  {
+    "id": 16,
+    "nom": "La Primatiale",
+    "adresse": "14 Rue de la Primatiale, 54000 Nancy",
+    "latitude": 48.6908,
+    "longitude": 6.1865
+  }
+]
