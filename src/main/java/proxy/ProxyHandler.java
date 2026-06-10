@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 import donnees_bloquees.InterfaceIncidents;
@@ -78,11 +79,17 @@ class ProxyHandler implements HttpHandler {
       String endpoint = uri.substring(4);
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
-        String endpoint = uri.substring(3);
+        endpoint = uri.substring(3);
         ServiceDatabase restaurant = this.proxy.getRestaurants();
         if (endpoint.startsWith("/restaurants")) {
-          String jsonBd = restaurant.getCoordonneesRestaurants();
-          envoyerRequete(exchange, jsonBd, true);
+
+          try {
+            String jsonBd = restaurant.getCoordonneesRestaurants();
+            envoyerRequete(exchange, jsonBd, true);
+          } catch (RemoteException e) {
+            envoyerRequete(exchange, e.getMessage(), 400);
+          }
+
         } else if (endpoint.startsWith("/reserver")) {
           //recupérer les infos depuis les params POST de la requête
           
@@ -93,8 +100,14 @@ class ProxyHandler implements HttpHandler {
         }
       } else if (endpoint.startsWith("/incidents")) {
         InterfaceIncidents incidents = this.proxy.getIncidents();
-        String jsonBd = incidents.fetchAPIBloquee();
-        envoyerRequete(exchange, jsonBd, true);
+
+        try {
+          String jsonBd = incidents.fetchAPIBloquee();
+          envoyerRequete(exchange, jsonBd, true);
+        } catch (RemoteException e) {
+          envoyerRequete(exchange, e.getMessage(), 400);
+        }
+
       } else {
         System.out.println("/api/bd/...  || /api/data/...");
         envoyerRequete(exchange, "erreur : endpoint non valide", 400);
