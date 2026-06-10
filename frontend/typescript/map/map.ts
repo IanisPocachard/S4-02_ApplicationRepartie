@@ -8,7 +8,7 @@ import { Restaurant } from "../types/restaurants";
  * @param container éléments html qui contient cette carte
  * @returns La carte
  */
-export function initMap(container: HTMLElement): L.Map {
+export function initMap(container: HTMLElement): any {
 	const map = L.map(container).setView([48.6921, 6.1844], 13);
 
 	L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -38,19 +38,20 @@ export function popupContenu(info: VeloStationInformation, statut: VeloStationSt
 }
 
 /**
- * Crée une couche (LayerGroup) contenant un marqueur pour chaque station vélib
- * opérationnelle, avec une icône colorée selon le nombre de vélos et une pop-up.
+ * Crée sur la carte un marqueur pour chaque station vélib opérationnelle,
+ * avec une icône colorée selon le nombre de vélos et une pop-up détaillée.
+ * @param map La carte
  * @param stations Liste des stations avec toutes les infos
  * @param statuts Les statuts des stations indexés par station_id
  * @param filtre Prédicat optionnel : si true pour un statut, la station est ignorée
- * @returns Un objet contenant la couche et les marqueurs indexés par station_id
+ * @returns Une Map des marqueurs créés, indexés par station_id (pour les ouvrir depuis la liste)
  */
-export function createStationLayer(
+export function addStationMarkers(
+	map: L.Map,
 	stations: VeloStationInformation[],
 	statuts: Map<string, VeloStationStatus>,
 	filtre?: (statut: VeloStationStatus) => boolean,
-): { layer: L.LayerGroup; marqueurs: Map<string, L.Marker> } {
-	const layer = L.layerGroup();
+): Map<string, L.Marker> {
 	const marqueurs = new Map<string, L.Marker>();
 
 	for (const station of stations) {
@@ -59,55 +60,34 @@ export function createStationLayer(
 
 		const velos = statut?.num_bikes_available ?? 0;
 		const marqueur = L.marker([station.lat, station.lon], { icon: icone(velos) })
+			.addTo(map)
 			.bindPopup(popupContenu(station, statut));
-		layer.addLayer(marqueur);
 		marqueurs.set(station.station_id, marqueur);
 	}
 
-	return { layer, marqueurs };
+	return marqueurs;
 }
 
-/**
- * Crée une couche contenant un marqueur pour chaque incident.
- * @param incidents Liste des incidents
- * @returns Un objet contenant la couche et les marqueurs indexés par id d'incident
- */
-export function createIncidentLayer(
-	incidents: Incident[],
-): { layer: L.LayerGroup; marqueurs: Map<string, L.Marker> } {
-	const layer = L.layerGroup();
-	const marqueurs = new Map<string, L.Marker>();
-
+export function addIncidentMarkers(map: any, incidents: Incident[]): void {
 	incidents.forEach((incident) => {
 		const coordonnees = incident.location.polyline.split(" ").map(Number); // on split la polyline pour récupérer les coordonnées GPS de l'incident donc on récupère un tableau [latitude, longitude]
-		const marker = L.marker([coordonnees[0], coordonnees[1]])
-			.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
-		layer.addLayer(marker);
-		marqueurs.set(incident.id, marker);
+		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
+		console.log("Ajout du marqueur pour l'incident qui a la description : " + incident.description + " à la position GPS : (" + coordonnees[0] + ", " + coordonnees[1] + ")");
+		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
 	});
-
-	return { layer, marqueurs };
 }
 
 /**
- * Crée une couche contenant un marqueur pour chaque restaurant.
+ * Crée sur la carte un marqueur pour chaque restaurant.
+ * @param map La carte
  * @param restaurants Liste des restaurants
- * @returns Un objet contenant la couche et les marqueurs indexés par id de restaurant
  */
-export function createRestaurantLayer(
-	restaurants: Restaurant[],
-): { layer: L.LayerGroup; marqueurs: Map<string, L.Marker> } {
-	const layer = L.layerGroup();
-	const marqueurs = new Map<string, L.Marker>();
-
+export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[]): void {
 	restaurants.forEach((restaurant) => {
-		const marker = L.marker([restaurant.latitude, restaurant.longitude])
-			.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.adresse}`);
-		layer.addLayer(marker);
-		marqueurs.set(restaurant.id, marker);
+		const marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
+		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
+		marker.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.adresse}`);
 	});
-
-	return { layer, marqueurs };
 }
 
 /**

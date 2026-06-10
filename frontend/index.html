@@ -16,23 +16,10 @@
 
 <div id="app">
     <div id="sidebar">
-        <div class="sidebar-header" id="sidebar-title">Stations VéloStan Nancy</div>
-
-        <div class="tabs" role="tablist" aria-label="Type de données à afficher">
-            <button type="button" class="tab" role="tab" id="tab-velos"
-                    data-tab="velos" aria-controls="list-panel" aria-selected="true">Vélos</button>
-            <button type="button" class="tab" role="tab" id="tab-incidents"
-                    data-tab="incidents" aria-controls="list-panel" aria-selected="false">Incidents</button>
-            <button type="button" class="tab" role="tab" id="tab-restaurants"
-                    data-tab="restaurants" aria-controls="list-panel" aria-selected="false">Restaurants</button>
-        </div>
-
-        <label for="search" class="sr-only">Rechercher dans la liste</label>
-        <input type="text" id="search" placeholder="Rechercher...">
-
-        <div id="list-panel" role="tabpanel" aria-labelledby="tab-velos">
-            <div id="station-list"></div>
-        </div>
+        <div class="sidebar-header">Stations VéloStan Nancy</div>
+        <label for="search" class="sr-only">Rechercher une station</label>
+        <input type="text" id="search" placeholder="Rechercher une station...">
+        <div id="station-list"></div>
     </div>
 
     <div id="map" role="application" aria-label="Carte des stations VéloStan de Nancy"></div>
