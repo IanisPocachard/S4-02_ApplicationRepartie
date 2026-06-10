@@ -49,11 +49,11 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
  * @param map La carte
  * @param restaurants Liste des restaurants
  */
-export function addRestaurantMarkers(map: any, restaurants: Restaurant[]): void {
+export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[]): void {
 	restaurants.forEach((restaurant) => {
-		const marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
-		console.log(`Ajout du marqueur pour le restaurant ${restaurant.name} à la position (${restaurant.lat}, ${restaurant.lon})`);
-		marker.bindPopup(`<strong>${restaurant.name}</strong><br>${restaurant.type ?? ""}<br>${restaurant.address ?? ""}`);
+		const marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
+		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
+		marker.bindPopup(`<strong>${restaurant.nom}</strong><br>${restaurant.addresse}`);
 	});
 }
 
