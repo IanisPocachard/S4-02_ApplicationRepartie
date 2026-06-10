@@ -17,12 +17,14 @@ public class Proxy implements InterfaceProxy {
   public Proxy() {}
   
   public void setIncident(InterfaceIncidents incident) {
+    System.out.println("service RMI pour les incidents prêt");
     this.incident = incident;
     this.isIncidentReady = true;
     if (this.isRestaurantReady) this.lancerServeurHttp();
   }
   
   public void setRestaurant(ServiceDatabase restaurant) throws RemoteException {
+    System.out.println("service RMI pour la base de données prêt");
     this.restaurant = restaurant;
     this.isRestaurantReady = true;
     if (this.isIncidentReady) this.lancerServeurHttp();
@@ -37,7 +39,9 @@ public class Proxy implements InterfaceProxy {
   }
   
   public void lancerServeurHttp () {
-		try {
+    System.out.println("LANCEMENT DU SERVEUR HTTP");
+
+    try {
       HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)
       server.createContext("/", new ProxyHandler(this)); //configuration du handler pour le chemin "/" (home)
       server.setExecutor(null); //pas d'objet Executor pour le proxy  --> Executor : remplace la création de Thread explicite (executor.execute(new RunnableTask()); | new Thread(new RunnableTask()).start();)
