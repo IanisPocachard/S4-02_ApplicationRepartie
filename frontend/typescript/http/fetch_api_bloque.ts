@@ -3,11 +3,6 @@
  * Tente d'abord un fetch direct ; en cas d'échec (CORS notamment), contourne
  * via le proxy en lui envoyant l'URL cible dans le body. Le proxy effectue
  * alors la requête à notre place via le client HTTP (RMI) et nous renvoie le JSON.
- *
- * @param urlApi URL de l'API cible (potentiellement bloquée par CORS)
- * @param urlProxy URL du proxy qui effectue la requête à notre place
- * @throws {Error} Si la requête directe ET la requête proxy échouent
- * @returns Une promesse contenant les données typées
  */
 export async function fetchAPIBloque<T>(urlApi: string, urlProxy: string): Promise<T> {
 	try {
