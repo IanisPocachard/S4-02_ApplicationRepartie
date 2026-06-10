@@ -22,7 +22,12 @@ class ProxyHandler implements HttpHandler {
   }
   
   public void envoyerRequete(HttpExchange exchange, String response) throws IOException {
-    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse 
+    exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
     try (OutputStream os = exchange.getResponseBody()) { //exchange.getResponseBody() --> récupère le flux de sortie associé à la réponse HTTP. c’est dans ce flux qu’on écrit le contenu envoyé au client.
@@ -32,6 +37,11 @@ class ProxyHandler implements HttpHandler {
 
   public void envoyerRequete(HttpExchange exchange, String response, int status) throws IOException {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
@@ -42,6 +52,11 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
@@ -52,6 +67,11 @@ class ProxyHandler implements HttpHandler {
   public void envoyerRequete(HttpExchange exchange, String response, int status, boolean isJson) throws IOException {
     if (!isJson) exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
+
+    exchange.getRequestHeaders().add("Access-Control-Allow-Origin", "*");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getRequestHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
     try (OutputStream os = exchange.getResponseBody()) { 
