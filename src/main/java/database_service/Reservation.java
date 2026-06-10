@@ -36,7 +36,7 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "database_service.Reservation{" +
+        return "Reservation{" +
                 "id=" + id +
                 ", nomClient='" + nomClient + '\'' +
                 ", prenomClient='" + prenomClient + '\'' +

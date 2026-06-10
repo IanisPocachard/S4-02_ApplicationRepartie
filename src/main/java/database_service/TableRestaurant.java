@@ -21,7 +21,7 @@ public class TableRestaurant {
 
     @Override
     public String toString() {
-        return "database_service.TableRestaurant{" +
+        return "TableRestaurant{" +
                 "id=" + id +
                 ", capacite=" + capacite +
                 ", restaurant=" + (restaurant != null ? restaurant.getNom() : "null") +
