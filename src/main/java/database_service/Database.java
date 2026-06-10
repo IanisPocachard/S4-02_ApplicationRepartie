@@ -47,6 +47,8 @@ public class Database implements ServiceDatabase {
     }
 
     public void chargerRestaurants(String fichier) throws IOException {
+        Restaurant.dropAll();
+
         String contenu = Files.readString(Path.of(fichier));
 
         JSONArray jsonArray = new JSONArray(contenu);
