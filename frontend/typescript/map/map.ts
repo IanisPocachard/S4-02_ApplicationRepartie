@@ -1,6 +1,7 @@
 import L from "leaflet";
 import { VeloStationInformation } from "../types/velo";
 import { Incident } from "../types/incidents";
+import { Restaurant } from "../types/restaurants";
 
 /**
  * Initialisation du conteneur de la carte
@@ -40,6 +41,19 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
 		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
 		console.log("Ajout du marqueur pour l'incident qui a la descritpion : " + incident.description + " à la position GPS : (" + coordonnees[0], coordonnees[1] + ")");
 		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
+	});
+}
+
+/**
+ * Crée sur la carte un marqueur pour chaque restaurant.
+ * @param map La carte
+ * @param restaurants Liste des restaurants
+ */
+export function addRestaurantMarkers(map: any, restaurants: Restaurant[]): void {
+	restaurants.forEach((restaurant) => {
+		const marker = L.marker([restaurant.lat, restaurant.lon]).addTo(map);
+		console.log(`Ajout du marqueur pour le restaurant ${restaurant.name} à la position (${restaurant.lat}, ${restaurant.lon})`);
+		marker.bindPopup(`<strong>${restaurant.name}</strong><br>${restaurant.type ?? ""}<br>${restaurant.address ?? ""}`);
 	});
 }
 
