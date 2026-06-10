@@ -1,9 +1,10 @@
 import L from "leaflet";
-import { initMap, addIncidentMarkers, icone, couleur } from "../map/map";
+import { initMap, addIncidentMarkers, addRestaurantMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import { fetchAPIIncidents } from "../http/incidents_api";
+import { fetchAPIRestaurants } from "../http/restaurants_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
-import { INCIDENTS_API_URL, PROXY_URL } from "../config/config";
+import { INCIDENTS_API_URL, RESTAURANTS_API_URL, PROXY_URL } from "../config/config";
 
 
 
@@ -112,6 +113,13 @@ export async function renderApp(): Promise<void> {
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch(error) {
 		console.error("Erreur lors du chargement des incidents" + error);
+	}
+
+	try {
+		const restaurantsRep = await fetchAPIRestaurants(RESTAURANTS_API_URL, PROXY_URL);
+		addRestaurantMarkers(carte, restaurantsRep.restaurants);
+	} catch(error) {
+		console.error("Erreur lors du changement des restaurants : " + error);
 	}
 
 }
