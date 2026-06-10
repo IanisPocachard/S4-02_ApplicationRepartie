@@ -107,7 +107,7 @@ public class Database implements ServiceDatabase {
 
     @Override
     public String reserverTable(
-            Restaurant restaurant,
+            int idRestaurant,
             LocalDateTime date,
             int nbPersonnes,
             String nom,
@@ -123,6 +123,8 @@ public class Database implements ServiceDatabase {
 
             // début transaction
             connection.setAutoCommit(false);
+
+            Restaurant restaurant = Restaurant.read(idRestaurant);
 
             ArrayList<TableRestaurant> tables =
                     TableRestaurant.getTablesByRestaurant(restaurant, nbPersonnes);

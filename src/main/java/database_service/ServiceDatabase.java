@@ -9,7 +9,7 @@ public interface ServiceDatabase extends Remote {
     public String getCoordonneesRestaurants() throws RemoteException;
 
     public String reserverTable(
-        Restaurant restaurant,
+        int idRestaurant,
         LocalDateTime date,
         int nbPersonnes,
         String nom,
