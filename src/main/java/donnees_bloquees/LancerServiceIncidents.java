@@ -25,6 +25,6 @@ public class LancerServiceIncidents {
 
         serviceProxyDistant.setIncident(rd); // on enregistre le service de données dans le proxy pour qu'il puisse y accéder à distance via RMI ensuite quand il va recevoir des requêtes HTTP du client
 
-        System.out.println("Client HTTP exporté vers le proxy à l'adresse IP : " + ipProxy + ", prêt à recevoir les requêtes du proxy pour intéragir avec des API bloquées");
+        System.out.println("[Client HTTP] Prêt à l'adresse IP : " + ipProxy + ", prêt à recevoir les requêtes du proxy pour intéragir avec des API bloquées");
     }
 }
