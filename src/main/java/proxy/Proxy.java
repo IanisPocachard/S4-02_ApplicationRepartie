@@ -10,24 +10,26 @@ import database_service.ServiceDatabase;
 
 public class Proxy implements InterfaceProxy {
   private InterfaceIncidents incident = null;
-  private boolean isIncidentReady = false;
+  //private boolean isIncidentReady = false;
   private ServiceDatabase restaurant = null;
-  private boolean isRestaurantReady = false;
+  //private boolean isRestaurantReady = false;
   
-  public Proxy() {}
+  public Proxy() {
+    lancerServeurHttp();
+  }
   
   public void setIncident(InterfaceIncidents incident) {
-    System.out.println("service RMI pour les incidents prêt");
+    System.out.println("[PROXY] service RMI pour les incidents prêt");
     this.incident = incident;
-    this.isIncidentReady = true;
-    if (this.isRestaurantReady) this.lancerServeurHttp();
+    //this.isIncidentReady = true;
+    //if (this.isRestaurantReady) this.lancerServeurHttp();
   }
   
   public void setRestaurant(ServiceDatabase restaurant) throws RemoteException {
-    System.out.println("service RMI pour la base de données prêt");
+    System.out.println("[PROXY] service RMI pour la base de données prêt");
     this.restaurant = restaurant;
-    this.isRestaurantReady = true;
-    if (this.isIncidentReady) this.lancerServeurHttp();
+    //this.isRestaurantReady = true;
+    //if (this.isIncidentReady) this.lancerServeurHttp();
   }
 
   public InterfaceIncidents getIncidents() {
@@ -39,7 +41,7 @@ public class Proxy implements InterfaceProxy {
   }
   
   public void lancerServeurHttp () {
-    System.out.println("LANCEMENT DU SERVEUR HTTP");
+    System.out.println("[PROXY] LANCEMENT DU SERVEUR HTTP");
 
     try {
       HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);// InetSocketAdress --> représentation d'une adresse IP + port (adresse local et port 8080 ici) | le 0 c'est pour les backlogs (max 0 ici)

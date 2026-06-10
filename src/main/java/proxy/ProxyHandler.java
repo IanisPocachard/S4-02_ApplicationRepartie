@@ -85,66 +85,80 @@ class ProxyHandler implements HttpHandler {
     //pour l'instant j'affiche juste la requête du client | TODO --> call rmi en fonction de la requête du client.
     String clientAddress = exchange.getRemoteAddress().toString();
 
-    System.out.println("-------------------- CONNEXION DE : "+clientAddress+" --------------------");
-    System.out.println(exchange.getRequestMethod() + " " + exchange.getRequestURI() + " " + exchange.getProtocol());
+    System.out.println("[PROXYHANDLER] -------------------- CONNEXION DE : "+clientAddress+" --------------------");
+    System.out.println("[PROXYHANDLER] "+exchange.getRequestMethod() + " " + exchange.getRequestURI() + " " + exchange.getProtocol());
 
     for (Map.Entry<String, List<String>> entry : exchange.getRequestHeaders().entrySet()) {
         for (String value : entry.getValue()) {
-            System.out.println(entry.getKey() + ": " + value);
+            System.out.println("[PROXYHANDLER] "+entry.getKey() + ": " + value);
         }
     }
 
 
     String uri = String.valueOf(exchange.getRequestURI());
     System.out.println();
-    System.out.println("URI: " + uri);
+    System.out.println("[PROXYHANDLER] URI: " + uri);
     if (uri.startsWith("/api")) {
-      System.out.println("l'endpoint /api est appelé");
+      System.out.println("[PROXYHANDLER] l'endpoint /api est appelé");
       String endpoint = uri.substring(4);
       
       if (endpoint.startsWith("/bd")) { //TODO : faire un endpoint pour les coordonnées et un endpoint pour séservé (/bd/reserver/<restaurant>) 
-        System.out.println("l'endpoint /api/bd est appelé");
+        System.out.println("[PROXYHANDLER] l'endpoint /api/bd est appelé");
         endpoint = uri.substring(3);
         ServiceDatabase restaurant = this.proxy.getRestaurants();
-        if (endpoint.startsWith("/restaurants")) {
-          System.out.println("l'endpoint /api/bd/restaurants est appelé");
-          try {
-            String jsonBd = restaurant.getCoordonneesRestaurants();
-            envoyerRequete(exchange, jsonBd, true);
-          } catch (RemoteException e) {
-            System.out.println("l'appel RMI pour récupérer les coordonées des restaurants a échoué avec l'erreur : "+e.getMessage());
-            envoyerRequete(exchange, e.getMessage(), 400);
+
+        if (restaurant == null) {
+          System.out.println("[PROXYHANDLER] Le service RMI pour de gestion de BD n'est pas enregistré au près du proxy");
+          envoyerRequete(exchange, "erreur : le service RMI de base de données n'est pas disponible", 400);
+        } else {
+
+          if (endpoint.startsWith("/restaurants")) {
+            System.out.println("[PROXYHANDLER] l'endpoint /api/bd/restaurants est appelé");
+            try {
+              String jsonBd = restaurant.getCoordonneesRestaurants();
+              envoyerRequete(exchange, jsonBd, true);
+            } catch (RemoteException e) {
+              System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les coordonées des restaurants a échoué avec l'erreur : "+e.getMessage());
+              envoyerRequete(exchange, e.getMessage(), 400);
+            }
+
+          } else if (endpoint.startsWith("/reserver")) {
+            System.out.println("[PROXYHANDLER] l'endpoint /api/bd/reserver est appelé");
+
+            //recupérer les infos depuis les params POST de la requête
+
+            //String jsonBd = restaurant.reserverTable();
+            //envoyerRequete(exchange, jsonBd, true);
+          } else {
+            System.out.println("[PROXYHANDLER] l'endpoint est invalide : il commance par /api/bd mais ne fini pas par 'restaurants' ou 'reserver'");
+            envoyerRequete(exchange, "erreur : endpoint non valide", 400);
           }
 
-        } else if (endpoint.startsWith("/reserver")) {
-          System.out.println("l'endpoint /api/bd/reserver est appelé");
-
-          //recupérer les infos depuis les params POST de la requête
-          
-          //String jsonBd = restaurant.reserverTable();
-          //envoyerRequete(exchange, jsonBd, true);
-        } else {
-          System.out.println("l'endpoint est invalide : il commance par /api/bd mais ne fini pas par 'restaurants' ou 'reserver'");
-          envoyerRequete(exchange, "erreur : endpoint non valide", 400);
         }
+
       } else if (endpoint.startsWith("/incidents")) {
-        System.out.println("l'endpoint /api/incidents est appelé");
+        System.out.println("[PROXYHANDLER] l'endpoint /api/incidents est appelé");
         InterfaceIncidents incidents = this.proxy.getIncidents();
 
-        try {
-          String jsonBd = incidents.fetchAPIIncidents();
-          envoyerRequete(exchange, jsonBd, true);
-        } catch (RemoteException e) {
-          System.out.println("l'appel RMI pour récupérer les incidents a échoué avec l'erreur : "+e.getMessage());
-          envoyerRequete(exchange, e.getMessage(), 400);
+        if (incidents == null) {
+          System.out.println("[PROXYHANDLER] Le service RMI pour de contournement de l'erreur CORS n'est pas enregistré au près du proxy");
+          envoyerRequete(exchange, "erreur : le service RMI pour les données bloquées n'est pas disponible", 400);
+        } else {
+          try {
+            String jsonBd = incidents.fetchAPIIncidents();
+            envoyerRequete(exchange, jsonBd, true);
+          } catch (RemoteException e) {
+            System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les incidents a échoué avec l'erreur : "+e.getMessage());
+            envoyerRequete(exchange, e.getMessage(), 400);
+          }
         }
 
       } else {
-        System.out.println("le client a utilisé l'endpoint /api mais n'a pas utilisé /api/bd/... ou /api/data/...");
+        System.out.println("[PROXYHANDLER] le client a utilisé l'endpoint /api mais n'a pas utilisé /api/bd/... ou /api/data/...");
         envoyerRequete(exchange, "erreur : endpoint non valide", 400);
       }
     } else {
-      System.out.println("l'endpoint /api n'est pas appelé");
+      System.out.println("[PROXYHANDLER] l'endpoint /api n'est pas appelé");
       String response = "Reponse Test depuis le serveur HTTP";
       envoyerRequete(exchange, response);
     }
