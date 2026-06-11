@@ -27,9 +27,9 @@ export interface DetailsReservation { // objet renvoyé par le backend (le servi
 }
 
 export interface ReservationResponse { // JSON renvoyé par le service RMI de Ianis aussi mais qui correspond à la réponse et qu'on va utiliser pour savoir si la réservation a fonctionné ou pas
-	status: "success" | "error";
+	status: "success" | "error"; // TODO va surement changé en fonction de ce que Ianis va me renvoyer dorénavant
 	message?: string; // Ianis renvoie le message d'erreur "no_table_available" dans le cas où la réservation n'a pas fonctionné
-	reservation? : Reservation;
+	reservation? : DetailsReservation;
 }
 
 export interface TableRestaurant {

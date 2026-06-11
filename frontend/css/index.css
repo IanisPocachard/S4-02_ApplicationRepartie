@@ -168,3 +168,83 @@ body {
     flex: 1;
     height: 100%;
 }
+
+
+
+/* Modales d'affichage d'erreurs + formulaire pour réservation d'un restaurant */
+
+.modal-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.35);
+}
+
+.modal {
+	width: 380px;
+	max-width: calc(100vw - 32px);
+	background: #fff;
+	border: 2px solid #2563eb;
+	border-radius: 8px;
+	padding: 16px;
+	display: grid;
+	gap: 10px;
+}
+
+.message-modal {
+	border-color: #dc2626;
+	text-align: center;
+}
+
+.modal-icon {
+	width: 32px;
+	height: 32px;
+	margin: 0 auto;
+	border-radius: 50%;
+	background: #dc2626;
+	color: white;
+	display: grid;
+	place-items: center;
+	font-weight: bold;
+}
+
+.modal h2,
+.modal h3 {
+	font-size: 18px;
+	color: #111827;
+}
+
+.modal p {
+	color: #374151;
+    white-space: pre-line; /* pour que les sauts de ligne soient pris en compte dans les messages d'erreur */
+}
+
+.modal label {
+	font-size: 13px;
+	font-weight: bold;
+	color: #374151;
+}
+
+.modal input {
+	padding: 8px;
+	border: 1px solid #d1d5db;
+	border-radius: 6px;
+}
+
+.modal-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.modal button {
+	border: 0;
+	border-radius: 6px;
+	padding: 8px 12px;
+	background: #2563eb;
+	color: white;
+	cursor: pointer;
+}

@@ -1,3 +1,7 @@
+/**
+ * Module responsable des appels HTTP liés aux incidents
+ */
+
 import { IncidentsResponse } from "../types/incidents";
 import { PROXY_INCIDENTS_URL } from "../config/config";
 

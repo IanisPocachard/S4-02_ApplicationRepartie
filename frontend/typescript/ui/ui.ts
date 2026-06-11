@@ -1,3 +1,9 @@
+/**
+ * ATTENTION :
+ * Module responsable de l'orchestration de l'interface de la page avec :
+ * chargement des données, la liste latérale, les modales et interactions utilisateur
+ */
+
 import L from "leaflet";
 import { initMap, addIncidentMarkers, addRestaurantMarkers, addStationMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
@@ -51,56 +57,92 @@ function afficherListe(stations: VeloStationInformation[], statuts: Map<string, 
 	}
 }
 
-function ouvrirFormulaireReservation(restaurant: Restaurant): void {
-	const nom = prompt("Entrez votre nom pour la réservation au restaurant " + restaurant.nom);
-	if (!nom) {
-		alert("Le nom est requis pour la réservation.");
-		return;
-	}
+async function ouvrirFormulaireReservation(restaurant: Restaurant): Promise<void> {
 
-	const prenom = prompt("De même pour votre prénom svp");
-	if (!prenom) {
-		alert("Le prénom est requis pour la réservation.");
-		return;
-	}
+	const modale = document.createElement("div");
+	modale.className = "modal-overlay";
 
-	const telephone = prompt("Et votre numéro de téléphone ?");
-	if (!telephone) {
-		alert("Le numéro de téléphone est requis pour la réservation.");
-		return;
-	}
+	modale.innerHTML = `
+		<form class="modal" id="formulaire-reservation">
+			<h2>Réserver chez ${restaurant.nom}</h2>
 
-	const nbPersonnesStr = prompt("Pour combien de personnes souhaitez-vous réserver ?");
-	const nbPersonnes = nbPersonnesStr ? parseInt(nbPersonnesStr) : NaN;
-	if (isNaN(nbPersonnes) || nbPersonnes <= 0) {
-		alert("Petit rigolo ! Rentre un nombre correct maintenant.");
-		return;
-	}
+			<label>Nom</label>
+			<input name="nom" required placeholder="Votre nom svp">
 
-	const date = prompt("Pour quelle date souhaitez-vous réserver ? (format YYYY-MM-DDTHH:mm)");
-	if (!date || isNaN(Date.parse(date))) {
-		alert("La date doit être au format YYYY-MM-DDTHH:mm je l'avais dit pourtant");
-		return;
-	}
+			<label>Prénom</label>
+			<input name="prenom" required placeholder="Maintenant votre prénom">
 
-	const reservation: Reservation = {
-		idRestaurant: restaurant.id,
-		date,
-		nbPersonnes,
-		nom,
-		prenom,
-		telephone
-	};
+			<label>Téléphone</label>
+			<input name="telephone" required placeholder="Et votre numéro de téléphone ?">
 
-	reserverRestaurant(reservation).then((reponseServiceRestaurant: ReservationResponse) => {
-		if (reponseServiceRestaurant.status === "success") {
-			alert("La réservation a bien été prise en compte ! \n En voici les détails : " + JSON.stringify(reponseServiceRestaurant.reservation));
-		} else {
-			alert("Erreur lors de la réservation : " + reponseServiceRestaurant.message); // TODO : voir demander à Ianis s'il renvoie bien tjrs un message d'erreur dans le cas où la réservation n'a pas fonctionné
+			<label>Nombre de personnes</label>
+			<input name="nbPersonnes" type="number" min="1" required placeholder="Pour combien de personnes ?">
+
+			<label>Date</label>
+			<input name="date" type="datetime-local" required placeholder="Pour quelle date ?"> 
+
+			<div class="modal-actions">
+				<button type="button" id="annuler-reservation">Annuler</button>
+				<button type="submit">Réserver</button>
+			</div>
+		</form>
+	`; // le datetime-local permet de renvoyer directement une string sous la bonne forme pour le backend donc pas besoin de faire de conversion particulière côté proxy Ambroise
+
+	document.body.appendChild(modale);
+
+	document.getElementById("annuler-reservation")?.addEventListener("click", () => {
+		modale.remove();
+	});
+
+	const formulaire = document.getElementById("formulaire-reservation") as HTMLFormElement;
+
+	formulaire.addEventListener("submit", async (event) => {
+		event.preventDefault(); // empêche le comportement par défaut du formulaire qui est de recharger la page lors de l'envoi sur submit, comme ça on peut envoyer avec notre fonction de fetch à nous
+
+		const donneesDuFormulaire = new FormData(formulaire);
+
+		const reservation: Reservation = {
+			idRestaurant: restaurant.id,
+			date: String(donneesDuFormulaire.get("date")),
+			nbPersonnes: Number(donneesDuFormulaire.get("nbPersonnes")),
+			nom: String(donneesDuFormulaire.get("nom")),
+			prenom: String(donneesDuFormulaire.get("prenom")),
+			telephone: String(donneesDuFormulaire.get("telephone")),
+		};
+
+		try {
+			const reponse = await reserverRestaurant(reservation);
+
+			modale.remove();
+			afficherMessage("Votre réservation a bien été prise en compte", "Réservation confirmée : " + reponse.reservation?.nom + " " + reponse.reservation?.prenom + " pour " + reponse.reservation?.nbPersonnes + " personnes le " + reponse.reservation?.date);
+
+		} catch (error) {
+			console.error(error);
+			afficherMessage("Réservation impossible", error instanceof Error ? error.message : "Impossible d'envoyer la réservation");
 		}
-	}).catch((error) => {
-		console.error("Erreur lors de la réservation : " + error);
-		alert("Une erreur est survenue lors de la réservation");
+	});
+}
+
+function afficherMessage(titre: string, message: string): void {
+	const popup = document.createElement("div");
+	popup.className = "modal-overlay";
+
+	popup.innerHTML = `
+		<div class="modal-message-informatif">
+			<div class="modal-icon">!</div>
+			<h3>${titre}</h3>
+			<p>${message}</p>
+			<div class="modal-actions">
+				<button type="button" class="modal-button">OK</button>
+			 </div>
+		</div>
+	`
+
+	document.body.appendChild(popup); // ajouter le popup à la page
+
+	const boutonFermer = popup.querySelector<HTMLButtonElement>(".modal-button"); // ici on met popup pour limiter la recherche du bouton à l'intérieur du popup qu'on vient de créer, parce que sinon dès qu'il y a plusieurs popups à l'écran ça peut poser problème pour trouver le bon bouton et fermer le bon popup
+	boutonFermer?.addEventListener("click", () => {
+		popup.remove();
 	});
 }
 
@@ -113,51 +155,61 @@ function ouvrirFormulaireReservation(restaurant: Restaurant): void {
 export async function renderApp(): Promise<void> {
 	const conteneurCarte = document.querySelector<HTMLElement>("#map");
 	if (!conteneurCarte) return;
-
-	const [infoRes, statutRes] = await Promise.all([
-		fetchStationInformation(),
-		fetchStationStatus(),
-	]);
-
-	const stations = infoRes.data.stations;
-	const statuts = new Map<string, VeloStationStatus>(
-		statutRes.data.stations.map(s => [s.station_id, s])
-	);
-
 	const carte = initMap(conteneurCarte) as L.Map;
-	const marqueurs = addStationMarkers(carte, stations, statuts, filtre);
-
-	afficherListe(stations, statuts, marqueurs, carte);
-
-	const searchInput = document.getElementById("search") as HTMLInputElement;
-
-	if (searchInput) {
-		searchInput.addEventListener("input", (event) => {
-			// Récupérer le texte tapé et le mettre en minuscules
-			const texteRecherche = (event.target as HTMLInputElement).value.toLowerCase();
-
-			// Filtrer les stations dont le nom ou l'adresse contient le texte recherché
-			const stationsFiltrees = stations.filter(station =>
-				station.name.toLowerCase().includes(texteRecherche) ||
-				station.address.toLowerCase().includes(texteRecherche)
-			);
-
-			// Mettre à jour l'affichage de la liste avec les résultats filtrés
-			afficherListe(stationsFiltrees, statuts, marqueurs, carte);
-		});
-	}
 
 	try {
-		const incidentsRep : IncidentsResponse = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
+		const [infoRes, statutRes] = await Promise.all([
+			fetchStationInformation(),
+			fetchStationStatus(),
+		]);
+		const stations = infoRes.data.stations;
+
+		const statuts = new Map<string, VeloStationStatus>(
+			statutRes.data.stations.map(s => [s.station_id, s])
+		);
+
+		const marqueurs = addStationMarkers(carte, stations, statuts, filtre);
+		afficherListe(stations, statuts, marqueurs, carte);
+
+		const searchInput = document.getElementById("search") as HTMLInputElement;
+
+		if (searchInput) {
+			searchInput.addEventListener("input", (event) => {
+				// Récupérer le texte tapé et le mettre en minuscules
+				const texteRecherche = (event.target as HTMLInputElement).value.toLowerCase();
+
+				// Filtrer les stations dont le nom ou l'adresse contient le texte recherché
+				const stationsFiltrees = stations.filter(station =>
+					station.name.toLowerCase().includes(texteRecherche) ||
+					station.address.toLowerCase().includes(texteRecherche)
+				);
+
+				// Mettre à jour l'affichage de la liste avec les résultats filtrés
+				afficherListe(stationsFiltrees, statuts, marqueurs, carte);
+			});
+		}
+
+	} catch (error) {
+		console.error("Erreur lors du chargement des données des stations : " + error);
+		afficherMessage("Erreur", "Impossible de charger les stations vélostanlib");
+	}
+
+
+
+
+	try {
+		const incidentsRep: IncidentsResponse = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch (error) {
 		console.error("Erreur lors du chargement des incidents" + error);
+		afficherMessage("Erreur", "Impossible de charger les incidents");
 	}
 
 	try {
-		const restaurants : Restaurant[] = await fetchRestaurants();
+		const restaurants: Restaurant[] = await fetchRestaurants();
 		addRestaurantMarkers(carte, restaurants, ouvrirFormulaireReservation);
 	} catch (error) {
 		console.error("Erreur lors du chargement des restaurants : " + error);
+		afficherMessage("Erreur", "Impossible de charger les restaurants");
 	}
 }

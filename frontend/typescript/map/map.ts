@@ -1,3 +1,11 @@
+/**
+ * ATTENTION : merci de ne pas mettre n'importe quoi dans ce fichier pour conserver une bonne séparation des responsabilités entre les modules.
+ * Ce module est responsable de l'affichage de la carte Leaflet donc :
+ * initialisation de la carte, icônes, marqueurs et popups !
+ */
+
+
+
 import L from "leaflet";
 import { VeloStationInformation, VeloStationStatus } from "../types/velo";
 import { Incident } from "../types/incidents";
@@ -82,7 +90,7 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
  * @param map La carte
  * @param restaurants Liste des restaurants
  */
-export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRestaurantClick?: (restaurant: Restaurant) => void): void {
+export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRestaurantClick: (restaurant: Restaurant) => void): void {
 	restaurants.forEach((restaurant) => {
 		const marker = L.marker([restaurant.latitude, restaurant.longitude], { icon: iconeRestaurant() }).addTo(map);
 		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
@@ -94,7 +102,7 @@ export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRe
 
 		marker.on("popupopen", () => {
 			document.querySelector(`#reserver-${restaurant.id}`)?.addEventListener("click", () => {
-				onRestaurantClick?.(restaurant);
+				onRestaurantClick(restaurant);
 			});
 		});
 	});

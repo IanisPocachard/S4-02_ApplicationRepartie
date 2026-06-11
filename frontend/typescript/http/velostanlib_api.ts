@@ -1,3 +1,7 @@
+/**
+ * Module responsable des appels HTTP liés à l'api velib
+ */
+
 import {VeloApiIndexResponse, VeloStationInformationResponse, VeloStationStatusResponse } from "../types/velo";
 import { VELO_API_INDEX_URL, VELO_API_STATION_INFORMATION_URL, VELO_API_STATION_STATUS_URL } from "../config/config";
 
