@@ -71,7 +71,7 @@ export function addStationMarkers(
 export function addIncidentMarkers(map: any, incidents: Incident[]): void {
 	incidents.forEach((incident) => {
 		const coordonnees = incident.location.polyline.split(" ").map(Number); // on split la polyline pour récupérer les coordonnées GPS de l'incident donc on récupère un tableau [latitude, longitude]
-		const marker = L.marker([coordonnees[0], coordonnees[1]]).addTo(map);
+		const marker = L.marker([coordonnees[0], coordonnees[1]], { icon: iconeIncident() }).addTo(map);
 		console.log("Ajout du marqueur pour l'incident qui a la description : " + incident.description + " à la position GPS : (" + coordonnees[0] + ", " + coordonnees[1] + ")");
 		marker.bindPopup(`<strong>${incident.type}</strong><br>${incident.short_description}<br>${incident.location.location_description}`);
 	});
@@ -82,9 +82,9 @@ export function addIncidentMarkers(map: any, incidents: Incident[]): void {
  * @param map La carte
  * @param restaurants Liste des restaurants
  */
-export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRestaurantClick? : (restaurant : Restaurant) => void): void {
+export function addRestaurantMarkers(map: L.Map, restaurants: Restaurant[], onRestaurantClick?: (restaurant: Restaurant) => void): void {
 	restaurants.forEach((restaurant) => {
-		const marker = L.marker([restaurant.latitude, restaurant.longitude]).addTo(map);
+		const marker = L.marker([restaurant.latitude, restaurant.longitude], { icon: iconeRestaurant() }).addTo(map);
 		console.log(`Ajout du marqueur pour le restaurant ${restaurant.nom} à la position (${restaurant.latitude}, ${restaurant.longitude})`);
 		marker.bindPopup(
 			`<strong>${restaurant.nom}</strong>
@@ -126,4 +126,37 @@ export function icone(velos: number): L.DivIcon {
 		iconSize: [12, 12],
 		iconAnchor: [6, 6],
 	});
+}
+
+/**
+ * Icône d'épingle générique avec un contenu (emoji) au centre.
+ * @param fond Couleur de fond de l'épingle
+ * @param contenu Emoji ou texte affiché au centre
+ * @returns une icône Leaflet en forme de pin
+ */
+function iconePin(fond: string, contenu: string): L.DivIcon {
+	return L.divIcon({
+		className: "",
+		html: `<div style="position:relative;width:30px;height:42px">
+			<div style="width:30px;height:30px;background:${fond};border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 5px rgba(0,0,0,0.4);position:absolute;left:0;top:0"></div>
+			<div style="position:absolute;width:30px;height:30px;left:0;top:0;display:flex;align-items:center;justify-content:center;font-size:15px;line-height:1">${contenu}</div>
+		</div>`,
+		iconSize: [30, 42],
+		iconAnchor: [15, 30],
+		popupAnchor: [0, -30],
+	});
+}
+
+/**
+ * Icône adaptée aux incidents de circulation.
+ */
+export function iconeIncident(): L.DivIcon {
+	return iconePin("#ef4444", "⚠️");
+}
+
+/**
+ * Icône adaptée aux restaurants.
+ */
+export function iconeRestaurant(): L.DivIcon {
+	return iconePin("#f59e0b", "🍽️");
 }
