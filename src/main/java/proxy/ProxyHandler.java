@@ -131,10 +131,46 @@ class ProxyHandler implements HttpHandler {
           } else if (endpoint.startsWith("/reserver")) {
             System.out.println("[PROXYHANDLER] l'endpoint /api/bd/reserver est appelé");
 
-            //recupérer les infos depuis les params POST de la requête
+            byte[] bytes = exchange.getRequestBody().readAllBytes();
+            String body = new String(bytes, StandardCharsets.UTF_8);
+            System.out.println("[PROXYHANDLER] Body POST = " + body);
 
-            //String jsonBd = restaurant.reserverTable();
-            //envoyerReponse(exchange, jsonBd, true);
+            JSONObject json = new JSONObject(body);
+
+            String restaurantId = json["restaurantId"];
+            String date = json["date"];
+            String nbPersonnes = json["nbPeronnes"];
+            String nom = json["nom"];
+            String prenom = json["prenom"];
+            String telephone = json["telephone"];
+            
+
+            System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
+            System.out.println("[PROXYHANDLER] date = " + date);
+            System.out.println("[PROXYHANDLER] nbPersonnes = " + nbPersonnes);
+            System.out.println("[PROXYHANDLER] nom = " + nom);
+            System.out.println("[PROXYHANDLER] prenom = " + prenom);
+            System.out.println("[PROXYHANDLER] telephone = " + telephone);
+
+            try {
+              int id = restaurantId.parseInt();
+              int nb = nbPersonnes.parseInt();
+              LocalDateTime d = LocalDateTime.parse(date);
+
+              String jsonBd = restaurant.reserverTable(id, d, nb, nom, prenom, telephone);
+              envoyerReponse(exchange, jsonBd, true);
+
+            } catch (RemoteException e) {
+              System.out.println("[PROXYHANDLER] l'appel RMI pour réserver une place dans un restaurant a échoué avec l'erreur : "+e.getMessage());
+              envoyerReponse(exchange, e.getMessage(), 400);
+            } catch (NumberFormatException  e) {
+              System.out.println("[PROXYHANDLER] erreur de convertion de type : "+e.getMessage());
+              envoyerReponse(exchange, e.getMessage(), 400);
+            } catch (Exception e) {
+              System.out.println("[PROXYHANDLER] erreur : "+e.getMessage());
+              envoyerReponse(exchange, e.getMessage(), 400);
+            }
+
           } else {
             System.out.println("[PROXYHANDLER] l'endpoint est invalide : il commance par /api/bd mais ne fini pas par 'restaurants' ou 'reserver'");
             envoyerReponse(exchange, "erreur : endpoint non valide", 400);
