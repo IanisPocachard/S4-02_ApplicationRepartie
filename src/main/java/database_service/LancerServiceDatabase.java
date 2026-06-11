@@ -1,14 +1,13 @@
 package database_service;
 
-import proxy.InterfaceProxy;
-import proxy.Proxy;
-
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+
+import proxy.InterfaceProxy;
 
 public class LancerServiceDatabase {
     public static void main(String[] args) {

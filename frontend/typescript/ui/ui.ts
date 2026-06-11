@@ -1,34 +1,12 @@
 import L from "leaflet";
-import { initMap, addIncidentMarkers, addRestaurantMarkers, icone, couleur } from "../map/map";
+import { initMap, addIncidentMarkers, addRestaurantMarkers, addStationMarkers, icone, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
-import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESTAURANTS_URL, PROXY_RESERVATION_URL } from "../config/config";
+import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESERVATION_URL } from "../config/config";
 import { IncidentsResponse } from "../types/incidents";
 import { fetchIncidents } from "../http/incidents_api";
-import { fetchRestaurants } from "../http/restaurants_api";
-
-
-
-
-
-
-/**
- * Construction d'une pop-up de station de velib
- * @param info Les informations d'une station
- * @param statut Le statut de la station
- * @returns une fenetre pop-up détaillant la station
- */
-function popupContenu(info: VeloStationInformation, statut: VeloStationStatus | undefined): string {
-	const velos = statut?.num_bikes_available ?? "?";
-	const places = statut?.num_docks_available ?? "?";
-	return `
-		<strong>${info.name}</strong><br>
-		${info.address}<br>
-		Vélos disponibles : <b>${velos}</b><br>
-		Places libres : <b>${places}</b><br>
-		Capacité : ${info.capacity}<br>
-	`;
-}
+import { fetchRestaurants, reserverRestaurant } from "../http/restaurants_api";
+import type { Restaurant, Reservation, ReservationResponse } from "../types/restaurants";
 
 /**
  * Méthode permettant de filtrer les stations non opérationnelles
@@ -73,6 +51,59 @@ function afficherListe(stations: VeloStationInformation[], statuts: Map<string, 
 	}
 }
 
+function ouvrirFormulaireReservation(restaurant: Restaurant): void {
+	const nom = prompt("Entrez votre nom pour la réservation au restaurant " + restaurant.nom);
+	if (!nom) {
+		alert("Le nom est requis pour la réservation.");
+		return;
+	}
+
+	const prenom = prompt("De même pour votre prénom svp");
+	if (!prenom) {
+		alert("Le prénom est requis pour la réservation.");
+		return;
+	}
+
+	const telephone = prompt("Et votre numéro de téléphone ?");
+	if (!telephone) {
+		alert("Le numéro de téléphone est requis pour la réservation.");
+		return;
+	}
+
+	const nbPersonnesStr = prompt("Pour combien de personnes souhaitez-vous réserver ?");
+	const nbPersonnes = nbPersonnesStr ? parseInt(nbPersonnesStr) : NaN;
+	if (isNaN(nbPersonnes) || nbPersonnes <= 0) {
+		alert("Petit rigolo ! Rentre un nombre correct maintenant.");
+		return;
+	}
+
+	const date = prompt("Pour quelle date souhaitez-vous réserver ? (format YYYY-MM-DDTHH:mm)");
+	if (!date || isNaN(Date.parse(date))) {
+		alert("La date doit être au format YYYY-MM-DDTHH:mm je l'avais dit pourtant");
+		return;
+	}
+
+	const reservation: Reservation = {
+		idRestaurant: restaurant.id,
+		date,
+		nbPersonnes,
+		nom,
+		prenom,
+		telephone
+	};
+
+	reserverRestaurant(reservation).then((reponseServiceRestaurant: ReservationResponse) => {
+		if (reponseServiceRestaurant.status === "success") {
+			alert("La réservation a bien été prise en compte ! \n En voici les détails : " + JSON.stringify(reponseServiceRestaurant.reservation));
+		} else {
+			alert("Erreur lors de la réservation : " + reponseServiceRestaurant.message); // TODO : voir demander à Ianis s'il renvoie bien tjrs un message d'erreur dans le cas où la réservation n'a pas fonctionné
+		}
+	}).catch((error) => {
+		console.error("Erreur lors de la réservation : " + error);
+		alert("Une erreur est survenue lors de la réservation");
+	});
+}
+
 /**
  * Point d'entrée principal de l'app
  * 1. Récupère les données statiques et dynamiques de l'api
@@ -94,34 +125,39 @@ export async function renderApp(): Promise<void> {
 	);
 
 	const carte = initMap(conteneurCarte) as L.Map;
-	const marqueurs = new Map<string, L.Marker>();
-
-	for (const station of stations) {
-		const statut = statuts.get(station.station_id);
-		if (statut && filtre(statut)) continue;
-
-		const velos = statut?.num_bikes_available ?? 0;
-		const marqueur = L.marker([station.lat, station.lon], { icon: icone(velos) })
-			.addTo(carte)
-			.bindPopup(popupContenu(station, statut));
-		marqueurs.set(station.station_id, marqueur);
-	}
+	const marqueurs = addStationMarkers(carte, stations, statuts, filtre);
 
 	afficherListe(stations, statuts, marqueurs, carte);
 
+	const searchInput = document.getElementById("search") as HTMLInputElement;
+
+	if (searchInput) {
+		searchInput.addEventListener("input", (event) => {
+			// Récupérer le texte tapé et le mettre en minuscules
+			const texteRecherche = (event.target as HTMLInputElement).value.toLowerCase();
+
+			// Filtrer les stations dont le nom ou l'adresse contient le texte recherché
+			const stationsFiltrees = stations.filter(station =>
+				station.name.toLowerCase().includes(texteRecherche) ||
+				station.address.toLowerCase().includes(texteRecherche)
+			);
+
+			// Mettre à jour l'affichage de la liste avec les résultats filtrés
+			afficherListe(stationsFiltrees, statuts, marqueurs, carte);
+		});
+	}
+
 	try {
-		// Récupération des incidents et ajout des marqueurs sur la carte
-		const incidentsRep = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
+		const incidentsRep : IncidentsResponse = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
-	} catch(error) {
+	} catch (error) {
 		console.error("Erreur lors du chargement des incidents" + error);
 	}
 
 	try {
-		const restaurants = await fetchRestaurants();
-		addRestaurantMarkers(carte, restaurants);
-	} catch(error) {
+		const restaurants : Restaurant[] = await fetchRestaurants();
+		addRestaurantMarkers(carte, restaurants, ouvrirFormulaireReservation);
+	} catch (error) {
 		console.error("Erreur lors du chargement des restaurants : " + error);
 	}
-
 }
