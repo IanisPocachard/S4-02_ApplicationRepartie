@@ -8,8 +8,11 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
+
+import database_service.ReservationImpossibleException;
 import donnees_bloquees.InterfaceIncidents;
 import database_service.ServiceDatabase;
 
@@ -137,12 +140,12 @@ class ProxyHandler implements HttpHandler {
 
             JSONObject json = new JSONObject(body);
 
-            String restaurantId = json["restaurantId"];
-            String date = json["date"];
-            String nbPersonnes = json["nbPeronnes"];
-            String nom = json["nom"];
-            String prenom = json["prenom"];
-            String telephone = json["telephone"];
+            int restaurantId = json.getInt("restaurantId");
+            String date = json.getString("date");
+            int nbPersonnes = json.getInt("nbPersonnes");
+            String nom = json.getString("nom");
+            String prenom = json.getString("prenom");
+            String telephone = json.getString("telephone");
             
 
             System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
@@ -153,17 +156,17 @@ class ProxyHandler implements HttpHandler {
             System.out.println("[PROXYHANDLER] telephone = " + telephone);
 
             try {
-              int id = restaurantId.parseInt();
-              int nb = nbPersonnes.parseInt();
               LocalDateTime d = LocalDateTime.parse(date);
 
-              String jsonBd = restaurant.reserverTable(id, d, nb, nom, prenom, telephone);
+              String jsonBd = restaurant.reserverTable(restaurantId, d, nbPersonnes, nom, prenom, telephone);
               envoyerReponse(exchange, jsonBd, true);
 
+            } catch (ReservationImpossibleException e) {
+              System.out.println("[PROXYHANDLER] " + e.getMessage());
             } catch (RemoteException e) {
               System.out.println("[PROXYHANDLER] l'appel RMI pour réserver une place dans un restaurant a échoué avec l'erreur : "+e.getMessage());
               envoyerReponse(exchange, e.getMessage(), 400);
-            } catch (NumberFormatException  e) {
+            } catch (DateTimeParseException e) {
               System.out.println("[PROXYHANDLER] erreur de convertion de type : "+e.getMessage());
               envoyerReponse(exchange, e.getMessage(), 400);
             } catch (Exception e) {

@@ -15,6 +15,6 @@ public interface ServiceDatabase extends Remote {
         String nom,
         String prenom,
         String telephone
-    ) throws RemoteException;
+    ) throws RemoteException, ReservationImpossibleException;
 
 }

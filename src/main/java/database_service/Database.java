@@ -158,7 +158,7 @@ public class Database implements ServiceDatabase {
             connection.rollback();
 
             throw new ReservationImpossibleException(
-                    "[RESERVATION] Réservation de " + nom + " " + prenom
+                    "Réservation de " + nom + " " + prenom
                     + " au restaurant " + restaurant.getNom()
                     + " et à la date et heure " + date + " impossible."
             );
