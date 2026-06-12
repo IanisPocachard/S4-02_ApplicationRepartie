@@ -204,11 +204,18 @@ body {
 	height: 32px;
 	margin: 0 auto;
 	border-radius: 50%;
-	background: #dc2626;
 	color: white;
 	display: grid;
 	place-items: center;
 	font-weight: bold;
+}
+
+.modal-icon.success {
+    background: #16a34a;
+}
+
+.modal-icon.error {
+    background: #dc2626;
 }
 
 .modal h2,

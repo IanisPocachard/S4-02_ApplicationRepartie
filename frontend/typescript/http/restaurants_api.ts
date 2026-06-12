@@ -9,13 +9,36 @@ import type { Restaurant, Reservation, DetailsReservation } from "../types/resta
 export async function fetchRestaurants(): Promise<Restaurant[]> {
 	if (!PROXY_RESTAURANTS_URL) throw new Error("Proxy non configuré, impossible d'accésder aux données des restaurants");
 
-	const reponse = await fetch(PROXY_RESTAURANTS_URL);
-	if (!reponse.ok) {
-        throw new Error("Erreur proxy restaurants : " + reponse.status);
-    }
+	console.log("[API RESTAURANTS] Récupération des restaurants");
 
-	return await reponse.json() as Restaurant[];
+	let reponse : Response;
+
+	try {
+		reponse = await fetch(PROXY_RESTAURANTS_URL);
+	} catch {
+		throw new Error("Impossible de joindre le proxy pour récupérer les restaurants");
+	}
+
+	console.log("[API RESTAURANTS] CODE HTTP : ", reponse.status);
+
+	if (reponse.status === 200) {
+		return await reponse.json() as Restaurant[];
+	}
+
+	const message = await reponse.text();
+
+	if (reponse.status === 503 || reponse.status === 502) {
+		throw new Error(message || "Le service de restaurants est indisponible");
+	}
+
+	if (reponse.status === 400) {
+		throw new Error(message || "La requête pour récupérer les restaurants est invalide");
+	}
+
+	throw new Error(message || "Erreur lors de la récupération des restaurants : " + reponse.status);
 }
+
+
 
 
 export async function reserverRestaurant(reservation : Reservation) : Promise<DetailsReservation> {
@@ -23,6 +46,8 @@ export async function reserverRestaurant(reservation : Reservation) : Promise<De
 	if (!PROXY_RESERVATION_URL) {
 		throw new Error("Proxy non configuré, impossible de faire une réservation");
 	}
+
+	console.log("[API RESTAURANTS] Envoi de la demande de réservation suivante au proxy : " + reservation);
 
 	let reponse : Response;
 
@@ -38,25 +63,27 @@ export async function reserverRestaurant(reservation : Reservation) : Promise<De
 		throw new Error("Impossible de joindre le proxy pour la réservation");
 	}
 
+	console.log("[API RESTAURANTS] CODE HTTP Réservation : " + reponse.status);
 
-	if (!reponse.ok) {
-		const message = await reponse.text();
 
-		if (reponse.status === 409) {
-			throw new Error(message || "Aucune table disponible pour la réservation demandée");
-		}
-
-		if (reponse.status === 400) {
-			throw new Error(message || "La demande de réservation est invalide");
-		}
-
-		if (reponse.status === 503 || reponse.status === 502) {
-			throw new Error(message || "Le service de réservation est indisponible");
-		}
-
-		throw new Error(message || "Erreur réservation : " + reponse.status);
+	if (reponse.status === 200 || reponse.status === 201) {
+		return await reponse.json() as DetailsReservation;
 	}
 
-	// return await reponse.json() as ReservationResponse;
-	return await reponse.json() as DetailsReservation;
+	const message = await reponse.text();
+
+	if (reponse.status === 409) {
+		throw new Error(message || "Aucune table disponible pour la réservation demandée");
+	}
+
+	if (reponse.status === 400) {
+		throw new Error(message || "La demande de réservation est invalide");
+	}
+
+	if (reponse.status === 503 || reponse.status === 502) {
+		throw new Error(message || "Le service de réservation est indisponible");
+	}
+
+	throw new Error(message || "Erreur lors de la réservation : " + reponse.status);
+
 }

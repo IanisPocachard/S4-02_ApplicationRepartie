@@ -124,25 +124,28 @@ async function ouvrirFormulaireReservation(restaurant: Restaurant): Promise<void
 				Date : ${reservationCreee.date}
 				Table pour : ${reservationCreee.nbPersonnes} personnes
 				`
-			);
+			, false);
 
 		} catch (error) {
 			console.error(error);
 			afficherMessage(
 				"Réservation impossible",
 				error instanceof Error ? error.message : "Impossible d'envoyer la réservation"
-			);
+			, true);
 		}
 	});
 }
 
-function afficherMessage(titre: string, message: string): void {
+function afficherMessage(titre: string, message: string, erreur : boolean): void {
 	const popup = document.createElement("div");
 	popup.className = "modal-overlay";
 
+	const icon = erreur ?  "<div class='modal-icon error'>!</div>" :  "<div class='modal-icon success'>✓</div>";
+
+
 	popup.innerHTML = `
 		<div class="modal-message-informatif">
-			<div class="modal-icon">!</div>
+			${icon}
 			<h3>${titre}</h3>
 			<p>${message}</p>
 			<div class="modal-actions">
@@ -204,7 +207,7 @@ export async function renderApp(): Promise<void> {
 
 	} catch (error) {
 		console.error("Erreur lors du chargement des données des stations : " + error);
-		afficherMessage("Erreur", "Impossible de charger les stations vélostanlib");
+		afficherMessage("Erreur", "Impossible de charger les stations vélostanlib", true);
 	}
 
 
@@ -215,7 +218,7 @@ export async function renderApp(): Promise<void> {
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch (error) {
 		console.error("Erreur lors du chargement des incidents" + error);
-		afficherMessage("Erreur", "Impossible de charger les incidents");
+		afficherMessage("Erreur", "Impossible de charger les incidents", true);
 	}
 
 	try {
@@ -223,6 +226,6 @@ export async function renderApp(): Promise<void> {
 		addRestaurantMarkers(carte, restaurants, ouvrirFormulaireReservation);
 	} catch (error) {
 		console.error("Erreur lors du chargement des restaurants : " + error);
-		afficherMessage("Erreur", "Impossible de charger les restaurants");
+		afficherMessage("Erreur", "Impossible de charger les restaurants", true);
 	}
 }
