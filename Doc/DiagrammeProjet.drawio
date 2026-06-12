@@ -1,4 +1,4 @@
-<mxGraphModel dx="774" dy="453" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+<mxGraphModel dx="1106" dy="647" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
   <root>
     <mxCell id="0" />
     <mxCell id="1" parent="0" />
@@ -39,7 +39,7 @@
     <mxCell id="h0KqDEHRPV8fkYqmAvE9-6" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Service RMI gestion BD" vertex="1">
       <mxGeometry height="130" width="150" x="150" y="390" as="geometry" />
     </mxCell>
-    <mxCell id="h0KqDEHRPV8fkYqmAvE9-7" parent="h0KqDEHRPV8fkYqmAvE9-6" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;JDBC/transactions&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;&lt;div&gt;JSON&lt;/div&gt;" vertex="1">
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-7" parent="h0KqDEHRPV8fkYqmAvE9-6" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;JDBC/transactions&lt;/div&gt;&lt;div&gt;RMI&lt;/div&gt;&lt;div&gt;JSON&lt;/div&gt;" vertex="1">
       <mxGeometry height="70" width="110" x="20" y="40" as="geometry" />
     </mxCell>
     <mxCell id="h0KqDEHRPV8fkYqmAvE9-8" parent="1" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" value="Données bloquées" vertex="1">
@@ -48,8 +48,8 @@
     <mxCell id="h0KqDEHRPV8fkYqmAvE9-9" parent="1" style="swimlane;whiteSpace=wrap;html=1;startSize=40;" value="Service RMI pour les données bloquées" vertex="1">
       <mxGeometry height="130" width="150" x="360" y="390" as="geometry" />
     </mxCell>
-    <mxCell id="h0KqDEHRPV8fkYqmAvE9-10" parent="h0KqDEHRPV8fkYqmAvE9-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;RMI/annuaire&lt;/div&gt;" vertex="1">
-      <mxGeometry height="60" width="110" x="20" y="50" as="geometry" />
+    <mxCell id="h0KqDEHRPV8fkYqmAvE9-10" parent="h0KqDEHRPV8fkYqmAvE9-9" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;b&gt;JAVA&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;RMI&lt;/div&gt;&lt;div&gt;client HTTP&lt;/div&gt;" vertex="1">
+      <mxGeometry height="80" width="110" x="20" y="50" as="geometry" />
     </mxCell>
     <mxCell id="h0KqDEHRPV8fkYqmAvE9-14" edge="1" parent="1" source="h0KqDEHRPV8fkYqmAvE9-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.596;entryY=-0.018;entryDx=0;entryDy=0;entryPerimeter=0;" target="h0KqDEHRPV8fkYqmAvE9-9">
       <mxGeometry relative="1" as="geometry" />
