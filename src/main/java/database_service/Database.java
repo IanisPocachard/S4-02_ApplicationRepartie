@@ -90,6 +90,8 @@ public class Database implements ServiceDatabase {
 
     @Override
     public String getCoordonneesRestaurants() {
+        System.out.println("[DATABASE] Récupération des restaurants...");
+
         ArrayList<Restaurant> restaurants = Restaurant.readAll();
 
         JSONArray jsonArray = new JSONArray();
@@ -97,6 +99,8 @@ public class Database implements ServiceDatabase {
         for (Restaurant restaurant : restaurants) {
             jsonArray.put(restaurant.toJson());
         }
+
+        System.out.println("[DATABASE] Récupération des restaurants efectuée.");
 
         return jsonArray.toString();
     }
@@ -111,6 +115,8 @@ public class Database implements ServiceDatabase {
             String telephone
     ) throws ReservationImpossibleException {
 
+        System.out.println("[DATABASE] Tentative de réservation d'une table...");
+
         Connection connection =
                 Database.getInstance(Credentials.USERNAME, Credentials.PASSWORD)
                         .getConnection();
@@ -121,6 +127,10 @@ public class Database implements ServiceDatabase {
             connection.setAutoCommit(false);
 
             Restaurant restaurant = Restaurant.read(idRestaurant);
+
+            if (restaurant == null) {
+                throw new ReservationImpossibleException("Restaurant introuvable.");
+            }
 
             ArrayList<TableRestaurant> tables =
                     TableRestaurant.getTablesByRestaurant(restaurant, nbPersonnes);
@@ -153,6 +163,10 @@ public class Database implements ServiceDatabase {
 
                     connection.commit();
 
+                    System.out.println("[DATABASE] Réservation de " + nom + " " + prenom
+                            + " au restaurant " + restaurant.getNom()
+                            + " et à la date et heure " + date + " réalisée.");
+
                     return r.toJson().toString();
                 }
             }
@@ -164,7 +178,12 @@ public class Database implements ServiceDatabase {
                     + " au restaurant " + restaurant.getNom()
                     + " et à la date et heure " + date + " impossible."
             );
+
         } catch (ReservationImpossibleException e) {
+            try {
+                connection.rollback();
+            } catch (Exception ignored) {}
+
             throw e;
 
         } catch (Exception e) {
@@ -173,11 +192,7 @@ public class Database implements ServiceDatabase {
                 connection.rollback();
             } catch (Exception ignored) {}
 
-            JSONObject error = new JSONObject();
-            error.put("status", "error");
-            error.put("message", e.getMessage());
-
-            return error.toString();
+            throw new ReservationImpossibleException(e.getMessage());
         }
     }
 

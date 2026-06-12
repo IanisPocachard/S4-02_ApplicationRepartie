@@ -56,7 +56,7 @@ public class LancerServiceDatabase {
             // Lier le service Database au proxy
             InterfaceProxy serviceProxy = (InterfaceProxy) registry.lookup("proxy");
             serviceProxy.setRestaurant(rd);
-            System.out.println("[DATABASE] Service Database lié au proxy !");
+            System.out.println("\n[DATABASE] Service Database lié au proxy !");
 
         } catch (RemoteException e) {
             e.printStackTrace();

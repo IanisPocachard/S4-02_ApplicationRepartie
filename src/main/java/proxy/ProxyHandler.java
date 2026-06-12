@@ -33,8 +33,13 @@ class ProxyHandler implements HttpHandler {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");// ajout du header content-type dans la reponse
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+      exchange.sendResponseHeaders(204, -1);
+      return;
+    }
 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length); // code 200 (ok) + content length
 
@@ -47,8 +52,13 @@ class ProxyHandler implements HttpHandler {
     exchange.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+      exchange.sendResponseHeaders(204, -1);
+      return;
+    }
 
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -62,8 +72,13 @@ class ProxyHandler implements HttpHandler {
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+      exchange.sendResponseHeaders(204, -1);
+      return;
+    }
 
     exchange.sendResponseHeaders(200, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -77,8 +92,13 @@ class ProxyHandler implements HttpHandler {
     else exchange.getResponseHeaders().add("Content-Type", "application/json; charset=utf-8");
 
     exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
-    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST");
+    exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
+
+    if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+      exchange.sendResponseHeaders(204, -1);
+      return;
+    }
 
     exchange.sendResponseHeaders(status, response.getBytes(StandardCharsets.UTF_8).length);
 
@@ -134,50 +154,65 @@ class ProxyHandler implements HttpHandler {
           } else if (endpoint.startsWith("/reserver")) {
             System.out.println("[PROXYHANDLER] l'endpoint /api/bd/reserver est appelé");
 
-            byte[] bytes = exchange.getRequestBody().readAllBytes();
-            String body = new String(bytes, StandardCharsets.UTF_8);
-            System.out.println("[PROXYHANDLER] Body POST = " + body);
+            if (exchange.getRequestMethod().equalsIgnoreCase("OPTIONS")) {
+              System.out.println("[PROXYHANDLER] methode: options");
+              envoyerReponse(exchange, "", 204);
+            } else if (exchange.getRequestMethod().equalsIgnoreCase("POST")) {
 
-            JSONObject json = new JSONObject(body);
+              System.out.println("[PROXYHANDLER] methode: post");
 
-            String restaurantId = json.getString("restaurantId");
-            String date = json.getString("date");
-            String nbPersonnes = json.getString("nbPeronnes");
-            String nom = json.getString("nom");
-            String prenom = json.getString("prenom");
-            String telephone = json.getString("telephone");
-            
+              byte[] bytes = exchange.getRequestBody().readAllBytes();
+              String body = new String(bytes, StandardCharsets.UTF_8);
+              System.out.println("[PROXYHANDLER] Body POST = " + body);
 
-            System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
-            System.out.println("[PROXYHANDLER] date = " + date);
-            System.out.println("[PROXYHANDLER] nbPersonnes = " + nbPersonnes);
-            System.out.println("[PROXYHANDLER] nom = " + nom);
-            System.out.println("[PROXYHANDLER] prenom = " + prenom);
-            System.out.println("[PROXYHANDLER] telephone = " + telephone);
+              JSONObject json = new JSONObject(body);
 
-            try {
-              int id = Integer.parseInt(restaurantId);
-              int nb = Integer.parseInt(nbPersonnes);
-              LocalDateTime d = LocalDateTime.parse(date);
+              System.out.println(json);
 
-              String jsonBd = restaurant.reserverTable(id, d, nb, nom, prenom, telephone);
-              envoyerReponse(exchange, jsonBd, true);
+              // String restaurantId = json.getString("restaurantId");
+              int restaurantId = json.getInt("idRestaurant");
+              String date = json.getString("date");
+              // String nbPersonnes = json.getString("nbPeronnes");
+              int nbPersonnes = json.getInt("nbPersonnes");
+              String nom = json.getString("nom");
+              String prenom = json.getString("prenom");
+              String telephone = json.getString("telephone");
 
-            } catch (RemoteException e) {
-              System.out.println("[PROXYHANDLER] l'appel RMI pour réserver une place dans un restaurant a échoué avec l'erreur : "+e.getMessage());
-              envoyerReponse(exchange, "erreur : problème de connexion réseau", 503);
-            } catch (NumberFormatException  e) {
-              System.out.println("[PROXYHANDLER] erreur de convertion de type : "+e.getMessage());
-              envoyerReponse(exchange, "paramètre(s) invalide(s) ", 400);
-            } catch (ReservationImpossibleException e) {
-              System.out.println("[PROXYHANDLER] reservation impossible : "+e.getMessage());
-              envoyerReponse(exchange, "reservation impossible", 409)
-            } catch (DateTimeParseException e) {
-              System.out.println("[PROXYHANDLER] erreur de convertion de type pour la date : "+e.getMessage());
-              envoyerReponse(exchange, "paramètre date invalide", 400);
-            } catch (Exception e) {
-              System.out.println("[PROXYHANDLER] erreur : "+e.getMessage());
-              envoyerReponse(exchange, "erreur", 500);
+
+              System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
+              System.out.println("[PROXYHANDLER] date = " + date);
+              System.out.println("[PROXYHANDLER] nbPersonnes = " + nbPersonnes);
+              System.out.println("[PROXYHANDLER] nom = " + nom);
+              System.out.println("[PROXYHANDLER] prenom = " + prenom);
+              System.out.println("[PROXYHANDLER] telephone = " + telephone);
+
+              try {
+                // int id = Integer.parseInt(restaurantId);
+                // int nb = Integer.parseInt(nbPersonnes);
+                LocalDateTime d = LocalDateTime.parse(date);
+
+                String jsonBd = restaurant.reserverTable(restaurantId, d, nbPersonnes, nom, prenom, telephone);
+                envoyerReponse(exchange, jsonBd, true);
+
+              } catch (RemoteException e) {
+                System.out.println("[PROXYHANDLER] l'appel RMI pour réserver une place dans un restaurant a échoué avec l'erreur : "+e.getMessage());
+                envoyerReponse(exchange, "erreur : problème de connexion réseau", 503);
+              } catch (NumberFormatException  e) {
+                System.out.println("[PROXYHANDLER] erreur de convertion de type : "+e.getMessage());
+                envoyerReponse(exchange, "paramètre(s) invalide(s) ", 400);
+              } catch (ReservationImpossibleException e) {
+                System.out.println("[PROXYHANDLER] reservation impossible : "+e.getMessage());
+                envoyerReponse(exchange, "reservation impossible", 409);
+              } catch (DateTimeParseException e) {
+                System.out.println("[PROXYHANDLER] erreur de convertion de type pour la date : "+e.getMessage());
+                envoyerReponse(exchange, "paramètre date invalide", 400);
+              } catch (Exception e) {
+                System.out.println("[PROXYHANDLER] erreur : "+e.getMessage());
+                envoyerReponse(exchange, "erreur", 500);
+              }
+            } else {
+              System.out.println("[PROXYHANDLER] methode autorisée: POST, OPTIONS");
+              envoyerReponse(exchange, "méthode autorisée POST/OPTIONS", 400);
             }
 
           } else {
