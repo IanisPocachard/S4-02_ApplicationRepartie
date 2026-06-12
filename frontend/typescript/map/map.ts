@@ -66,7 +66,6 @@ export function addStationMarkers(
 		const statut = statuts.get(station.station_id);
 		if (statut && filtre?.(statut)) continue;
 
-		const velos = statut?.num_bikes_available ?? 0;
 		const marqueur = L.marker([station.lat, station.lon], { icon: iconeVelo() })
 			.addTo(map)
 			.bindPopup(popupContenu(station, statut));
@@ -122,19 +121,6 @@ export function couleur(velos: number): string {
 	return "#22c55e";
 }
 
-/**
- * Construction d'un icon
- * @param velos - le nombre de vélos dispo sur la station
- * @returns une icon d'une station de velib
- */
-export function icone(velos: number): L.DivIcon {
-	return L.divIcon({
-		className: "",
-		html: `<div style="width:12px;height:12px;background:${couleur(velos)};border:2px solid white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,0.3)"></div>`,
-		iconSize: [12, 12],
-		iconAnchor: [6, 6],
-	});
-}
 
 /**
  * Icône d'épingle générique avec un contenu (emoji) au centre.

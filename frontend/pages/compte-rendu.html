@@ -19,6 +19,15 @@
 
         <p class="report-meta"></p>
 
+        <h2>Membres du groupe :</h2>
+        <ul>
+            <li>Ambroise Gilbert</li>
+            <li>Ianis Pocachard</li>
+            <li>Louis Ardhuin</li>
+            <li>Anastasia Tolkacheva</li>
+            <li>Adrien Tritarelli</li>
+        </ul>
+
         <h2>1. Introduction</h2>
 
         <h3>1.1. Présentation du projet</h3>
@@ -93,22 +102,37 @@
             <li>esbuild</li>
         </ul>
 
-        <h3>3.2. Organisation du code</h3>
-        <p></p>
+        <h3>3.2. Organisation du code frontend</h3>
+            <p>
+                Le frontend a été organisé en plusieurs modules TypeScript afin de séparer les responsabilités.
+                Le dossier <code>http</code> contient les fonctions chargées d'interroger les API ou le proxy HTTP.
+                Le dossier <code>types</code> contient les interfaces TypeScript correspondant aux données manipulées
+                par l'application, comme les stations VéloStan, les incidents, les restaurants et les réservations.
+                Le module <code>map</code> regroupe le code lié à la carte Leaflet avec l'initialisation de la carte, la création des
+                marqueurs et association des popups. Enfin, le module <code>ui</code> orchestre l'affichage général, le
+                chargement des données, l'insertion de la liste latérale, les formulaires de réservations et les modales popup.
+            </p>
 
-        <ul>
-            <li><code>config</code></li>
-            <li><code>http</code></li>
-            <li><code>map</code></li>
-            <li><code>ui</code></li>
-            <li><code>types</code></li>
-        </ul>
-
-        <h3>3.3. Affichage des stations VéloStan</h3>
-        <p></p>
-
-        <h3>3.4. Interface utilisateur</h3>
-        <p></p>
+        <h3>3.3. Gestiond de l'interface utilisateur</h3>
+            <p>
+                L'interface affiche une carte Leaflet centrée sur Nancy, accompagnée d'une liste des stations VéloStan. Les stations, les incidents et les restaurants sont représentés par des marqueurs.
+                Lorsqu'un utilisateur clique sur un restaurant puis sur le bouton réserver, une popup permet d'ouvrir un formulaire de réservation.
+                Le formulaire récupère les informations utiles puis ces informations sont ensuite envoyées au proxy HTTP naturellement au format JSON puisque JavaScript (ici TypeScript) permet de convertir nativement un objet en Json.
+            </p>
+            <p>
+                La gestion des erreurs côté frontend a été définie en cohérence avec le proxy HTTP. Nous avons convenu
+                d'utiliser des codes HTTP distincts selon la nature du problème : succès avec un code 200, requête invalide
+                avec un code 400, réservation impossible avec un code 409, erreur de communication avec un service RMI avec
+                un code 502 et service indisponible avec un code 503. Les fonctions du dossier <code>http</code> interprètent
+                ces codes avec <code>response.status</code>, puis lèvent une erreur TypeScript contenant un message adapté
+                à l'utilisateur.
+            </p>
+            <p>
+                Cette séparation permet d'éviter de mélanger la logique d'affichage et la logique réseau. Les fichiers
+                <code>restaurants_api.ts</code> et <code>incidents_api.ts</code> s'occupent de transformer les réponses HTTP
+                du proxy en données exploitables ou en erreurs compréhensibles. Le module <code>ui.ts</code> récupère ensuite
+                ces erreurs dans des blocs <code>try/catch</code> et les affiche dans une popup informative.
+            </p>
 
         <h2>4. Gestion des données externes</h2>
 
@@ -119,7 +143,13 @@
         <p></p>
 
         <h3>4.3. Problématique CORS</h3>
-        <p></p>
+            <p>
+                L'API des incidents ne pouvait pas être appelée directement depuis le navigateur à cause
+                de la politique CORS. Lorsqu'un navigateur bloque une requête CORS, le frontend ne reçoit pas un
+                code HTTP exploitable : l'appel <code>fetch</code> échoue directement. Pour contourner ce problème,
+                le frontend tente d'abord d'appeler l'API directement, puis utilise le proxy HTTP en solution de repli
+                si l'appel direct échoue.
+            </p>
 
         <figure class="report-figure">
             <img src="images/erreurCORS_console.png"
@@ -134,8 +164,18 @@
         </figure>
 
         <h3>4.4. Solution mise en œuvre</h3>
-        <p></p>
+            <p>
+                La solution repose sur un client HTTP Java exposé comme service RMI. Ce service implémente
+                l'interface <code>InterfaceIncidents</code> et fournit une méthode permettant de récupérer les données
+                de l'API incidents. Au démarrage, le service incidents récupère le service RMI du proxy (ce qui s'apparent à un service central dans notre architecture) en passant par l'annuaire puis s'enregistre
+                auprès de lui grâce à la méthode dédiée. Le proxy peut ensuite appeler ce service lorsqu'il reçoit une requête HTTP sur le endpoint <code>/api/incidents</code>.
+            </p>
 
+            <p>
+                Le navigateur ne contacte donc plus directement l'API bloquée lorsqu'une erreur CORS survient puisqu'il contacte le proxy en stratégie de replie.
+                Le proxy appelle alors le service RMI incidents, qui effectue la requête HTTP
+                côté serveur Java. Comme cette requête n'est plus faite par le navigateur, elle n'est pas soumise aux mêmes restrictions CORS. Le JSON obtenu est ensuite renvoyé au frontend.
+            </p>
         <h2>5. Proxy HTTP</h2>
 
         <h3>5.1. Rôle du proxy</h3>
@@ -227,7 +267,7 @@
             <ul>
                 <li>si les types des parametres POST ne sont pas respectés</li>
             </ul>
-            <li>401 Unauthorized</li>
+            <li>409 Conflict</li>
             <ul>
                 <li>si la reservation est imposible parce que le restaurant est déjà plein</li>
             </ul>

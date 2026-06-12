@@ -5,7 +5,7 @@
  */
 
 import L from "leaflet";
-import { initMap, addIncidentMarkers, addRestaurantMarkers, addStationMarkers, icone, couleur } from "../map/map";
+import { initMap, addIncidentMarkers, addRestaurantMarkers, addStationMarkers, couleur } from "../map/map";
 import { fetchStationInformation, fetchStationStatus } from "../http/velostanlib_api";
 import type { VeloStationInformation, VeloStationStatus } from "../types/velo";
 import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESERVATION_URL } from "../config/config";
@@ -73,7 +73,7 @@ async function ouvrirFormulaireReservation(restaurant: Restaurant): Promise<void
 			<input name="prenom" required placeholder="Maintenant votre prénom">
 
 			<label>Téléphone</label>
-			<input name="telephone" required placeholder="Et votre numéro de téléphone ?">
+			<input name="telephone" type="tel" pattern="[0-9]+" minlength="9" maxlength="12" required placeholder="Et votre numéro de téléphone ?">
 
 			<label>Nombre de personnes</label>
 			<input name="nbPersonnes" type="number" min="1" required placeholder="Pour combien de personnes ?">
@@ -121,13 +121,13 @@ async function ouvrirFormulaireReservation(restaurant: Restaurant): Promise<void
 				Restaurant : ${reservationCreee.restaurant?.nom}
 				Client : ${reservationCreee.prenomClient} ${reservationCreee.nomClient}
 				Téléphone : ${reservationCreee.numeroTelephone}
-				Date : ${reservationCreee.date}
+				Date : ${formaterDateFr(reservationCreee.date)}
 				Table pour : ${reservationCreee.nbPersonnes} personnes
 				`
 			, false);
 
 		} catch (error) {
-			console.error(error);
+			console.warn(error);
 			afficherMessage(
 				"Réservation impossible",
 				error instanceof Error ? error.message : "Impossible d'envoyer la réservation"
@@ -206,7 +206,7 @@ export async function renderApp(): Promise<void> {
 		}
 
 	} catch (error) {
-		console.error("Erreur lors du chargement des données des stations : " + error);
+		console.warn("Erreur lors du chargement des données des stations : " + error);
 		afficherMessage("Erreur", "Impossible de charger les stations vélostanlib", true);
 	}
 
@@ -217,15 +217,30 @@ export async function renderApp(): Promise<void> {
 		const incidentsRep: IncidentsResponse = await fetchIncidents(INCIDENTS_API_URL, PROXY_INCIDENTS_URL);
 		addIncidentMarkers(carte, incidentsRep.incidents);
 	} catch (error) {
-		console.error("Erreur lors du chargement des incidents" + error);
-		afficherMessage("Erreur", "Impossible de charger les incidents", true);
+		console.warn("Erreur lors du chargement des incidents" + error);
+		afficherMessage("Erreur", error instanceof Error ? error.message : "", true);
 	}
 
 	try {
 		const restaurants: Restaurant[] = await fetchRestaurants();
 		addRestaurantMarkers(carte, restaurants, ouvrirFormulaireReservation);
 	} catch (error) {
-		console.error("Erreur lors du chargement des restaurants : " + error);
-		afficherMessage("Erreur", "Impossible de charger les restaurants", true);
+		console.warn("Erreur lors du chargement des restaurants : " + error);
+		afficherMessage("Erreur", error instanceof Error ? error.message : "", true);
 	}
+}
+
+function formaterDateFr(dateBackend: string): string {
+	const date = new Date(dateBackend);
+	
+	console.log("Date backend : " + dateBackend + " Date parsée : " + date);
+
+	if (Number.isNaN(date.getTime())) { // getTime renvoie un nombre représentant le timestamp de la date, si la date n'est pas valide ça renvoie NaN, du coup si c'est le cas on retourne la date brute reçue du backend pour éviter d'afficher une date invalide à l'utilisateur
+		return dateBackend.replace("T", " à ");
+	}
+
+	return date.toLocaleString("fr-FR", {
+		dateStyle: "long",
+		timeStyle: "short",
+	});
 }
