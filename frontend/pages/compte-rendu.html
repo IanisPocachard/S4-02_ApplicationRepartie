@@ -17,142 +17,226 @@
     <article class="report">
         <h1>Compte rendu — Application Répartie (SAÉ S4-02)</h1>
 
-<p class="report-meta">
-    <strong>Dépôt Git :</strong>
-    <a href="https://github.com/IanisPocachard/S4-02_ApplicationRepartie">
-        github.com/IanisPocachard/S4-02_ApplicationRepartie
-    </a><br>
-    <strong>Soutenance :</strong> mardi 16 juin 2026<br>
-    <strong>Équipe :</strong> Louis Ardhuin, Ianis Pocachard, Adrien Tritarelli, Ambroise Gilbert
-    <!-- À COMPLÉTER : vérifier / ajuster la composition exacte de l'équipe -->
-</p>
+        <p class="report-meta"></p>
 
-<h2>1. Introduction</h2>
-<p>
-    Cette application répartie agrège et visualise des informations hétérogènes sur la
-    métropole de Nancy : stations VéloStan, restaurants et incidents de circulation.
-    Elle fait coopérer plusieurs composants distribués — une interface web, un proxy HTTP,
-    des services RMI et une base de données Oracle — afin de contourner proprement les
-    restrictions de sécurité du navigateur tout en gérant la robustesse réseau.
-</p>
+        <h2>1. Introduction</h2>
 
-<h2>2. Architecture</h2>
-<p>
-    L'application repose sur une architecture distribuée en trois couches : un client web,
-    un proxy HTTP servant de passerelle, et des services RMI donnant accès aux données.
-</p>
+        <h3>1.1. Présentation du projet</h3>
+        <p></p>
 
-<figure class="report-figure">
-    <img src="../../Doc/DiagrammeProjet.png"
-         alt="Schéma de l'architecture distribuée : navigateur, proxy HTTP, services RMI et base Oracle">
-    <figcaption>Schéma complet de l'architecture et des technologies échangées.</figcaption>
-    <!-- À COMPLÉTER : vérifier le chemin de l'image une fois le site déployé sur webetu -->
-</figure>
+        <h3>1.2. Objectifs de la SAÉ</h3>
+        <p></p>
 
-<ul>
-    <li>
-        <strong>Client web (TypeScript / Leaflet)</strong> : s'exécute dans le navigateur,
-        affiche une carte interactive centrée sur Nancy et dialogue en asynchrone (Fetch API)
-        avec les API publiques et notre proxy.
-    </li>
-    <li>
-        <strong>Proxy HTTP (Java <code>HttpServer</code>)</strong> : reçoit les requêtes du
-        client web sur le port 8080, route selon l'URL (<code>/api/bd</code>,
-        <code>/api/data</code>) et délègue aux services distants via RMI.
-    </li>
-    <li>
-        <strong>Services RMI</strong> : un service base de données (Oracle via JDBC) et un
-        service incidents (client HTTP serveur-à-serveur vers l'API Waze). Chaque service
-        s'enregistre auprès du proxy via le registre RMI.
-    </li>
-</ul>
+        <h3>1.3. Fonctionnalités réalisées</h3>
+        <p></p>
 
-<h2>3. Réalisation technique par module</h2>
+        <ul>
+            <li>Consultation des stations VéloStan</li>
+            <li>Consultation des restaurants</li>
+            <li>Consultation des incidents de circulation</li>
+            <li>Réservation de tables de restaurant</li>
+        </ul>
 
-<h3>3.1. Frontend et données ouvertes</h3>
-<p>
-    L'interface est écrite en TypeScript et packagée avec esbuild. Elle est organisée en
-    modules (couche <code>http</code>, <code>map</code>, <code>ui</code>, <code>types</code>,
-    <code>config</code>). Les stations VéloStan sont récupérées via l'API GBFS de Cyclocity
-    (informations statiques + statut temps réel) puis fusionnées pour afficher, sur chaque
-    marqueur, l'adresse, le nombre de vélos disponibles, les places libres et la capacité.
-    Les marqueurs sont colorés selon la disponibilité (rouge : aucun vélo, orange : ≤ 3,
-    vert : > 3) et une liste latérale synchronisée permet de recentrer la carte.
-</p>
-<!-- À COMPLÉTER : préciser l'état d'avancement de l'affichage des restaurants et des incidents côté carte -->
+        <h2>2. Architecture générale</h2>
 
-<h3>3.2. Proxy HTTP et contournement CORS</h3>
-<p>
-    L'API d'incidents de circulation du Grand Nancy n'expose pas l'en-tête
-    <code>Access-Control-Allow-Origin</code>, ce qui bloque tout appel <code>fetch</code>
-    direct depuis le navigateur (erreur CORS). Pour contourner ce blocage, un proxy Java
-    (<code>com.sun.net.httpserver.HttpServer</code>) reçoit les requêtes du client et
-    déclenche les appels RMI correspondants : le <code>ProxyHandler</code> lit l'URI,
-    route <code>/api/bd</code> vers le service restaurants et <code>/api/data</code> vers le
-    service incidents, puis renvoie la réponse au format JSON (avec gestion d'un code 400
-    pour un endpoint invalide).
-</p>
+        <h3>2.1. Vue d'ensemble de l'application</h3>
+        <p></p>
 
-<h3>3.3. Services RMI (base de données et incidents)</h3>
-<p>
-    <strong>Base de données :</strong> base Oracle hébergée sur Charlemagne, structurée en
-    trois tables (<code>Restaurant</code>, <code>TableRestaurant</code>,
-    <code>Reservation</code>). La connexion JDBC utilise une classe <code>Database</code> en
-    Singleton avec transactions manuelles (<code>setAutoCommit(false)</code>). Le service
-    expose deux opérations distantes : récupérer les coordonnées des restaurants (réponse
-    JSON) et réserver une table (nom, prénom, nombre de convives, téléphone).
-</p>
-<p>
-    <strong>Incidents :</strong> le <code>ServiceIncidents</code> utilise le
-    <code>HttpClient</code> de Java pour interroger l'API Waze, configuré pour passer par le
-    proxy de l'IUT (<code>www-cache:3128</code>), avec gestion du code HTTP et des erreurs
-    réseau (timeout, <code>IOException</code>, interruption).
-</p>
-<!-- À COMPLÉTER : préciser si le verrouillage pessimiste (FOR UPDATE) sur la réservation est implémenté -->
+        <ul>
+            <li>Frontend Web</li>
+            <li>Proxy HTTP</li>
+            <li>Service Base de Données</li>
+            <li>Service Incidents</li>
+            <li>Base Oracle</li>
+        </ul>
 
-<h2>4. Déploiement et exécution</h2>
-<p>Opérations prévues pour un environnement Linux (machines de l'IUT).</p>
+        <h3>2.2. Architecture répartie</h3>
+        <p></p>
 
-<h3>Base de données</h3>
-<p>
-    Renseigner les identifiants Oracle dans <code>src/main/java/database_service.Credentials.java</code>, puis
-    exécuter <code>database.sql</code> pour créer le schéma et le jeu d'essai.
-</p>
+        <ul>
+            <li>HTTP : navigateur vers proxy</li>
+            <li>RMI : proxy vers services</li>
+            <li>JDBC : service vers Oracle</li>
+            <li>HTTP : service vers API externes</li>
+        </ul>
 
-<h3>Services backend (Java / Maven)</h3>
-<p>
-    Maven gère les dépendances (<code>org.json</code>, <code>ojdbc11</code>) et la compilation
-    via <code>mvn clean compile</code>.
-</p>
-<!-- À COMPLÉTER : commandes exactes pour démarrer rmiregistry, lancer LancerProxy,
-     LancerServiceIncidents et le service base de données, avec l'ordre de lancement
-     et les adresses passées en argument (sans IP en dur) -->
+        <h3>2.3. Diagramme d'architecture</h3>
+        <p></p>
 
-<h3>Frontend</h3>
-<p>
-    Dans le dossier <code>frontend</code> : <code>npm install</code> puis
-    <code>npm run build</code>. Héberger le résultat sur le serveur webetu.
-</p>
-<!-- À COMPLÉTER : URL finale du site sur webetu -->
+        <figure class="report-figure">
+            <img src="../../Doc/DiagrammeProjet.png"
+                 alt="Schéma de l'architecture distribuée : navigateur, proxy HTTP, services RMI et base Oracle">
+            <figcaption></figcaption>
+        </figure>
 
-<h2>5. Analyse éthique et sécurité</h2>
-<p>
-    Le contournement de la politique CORS via un proxy backend est-il responsable ? Les
-    règles CORS protègent l'utilisateur final (contre le vol de session ou des actions à son
-    insu), pas l'API distante. Passer par un service Java serveur-à-serveur — un schéma de
-    type Backend For Frontend — est une pratique courante pour agréger des API tierces non
-    prévues pour un appel direct depuis le navigateur. La responsabilité se déplace alors vers
-    la sécurisation du proxy.
-</p>
-<!-- À COMPLÉTER : 1 ou 2 arguments concrets sur la sécurisation du proxy
-     (éviter l'open-relay, filtrage des entrées, restriction des endpoints exposés…) -->
+        <h2>3. Frontend Web</h2>
 
-<h2>6. Conclusion</h2>
-<p class="report-note">
-    À compléter : bilan de ce qui a fonctionné, difficultés rencontrées (gestion des adresses
-    réseau sans les coder en dur, configuration sur les machines de l'IUT, version de Java
-    différente sur Charlemagne) et apports du projet en architecture répartie.
-</p>
+        <h3>3.1. Technologies utilisées</h3>
+        <p></p>
+
+        <ul>
+            <li>TypeScript</li>
+            <li>Leaflet</li>
+            <li>HTML / CSS</li>
+            <li>esbuild</li>
+        </ul>
+
+        <h3>3.2. Organisation du code</h3>
+        <p></p>
+
+        <ul>
+            <li><code>config</code></li>
+            <li><code>http</code></li>
+            <li><code>map</code></li>
+            <li><code>ui</code></li>
+            <li><code>types</code></li>
+        </ul>
+
+        <h3>3.3. Affichage des stations VéloStan</h3>
+        <p></p>
+
+        <h3>3.4. Interface utilisateur</h3>
+        <p></p>
+
+        <h2>4. Gestion des données externes</h2>
+
+        <h3>4.1. API VéloStan</h3>
+        <p></p>
+
+        <h3>4.2. API Incidents</h3>
+        <p></p>
+
+        <h3>4.3. Problématique CORS</h3>
+        <p></p>
+
+        <figure class="report-figure">
+            <img src="../../Doc/erreurCORS_console.png"
+                 alt="Erreur CORS affichée dans la console du navigateur">
+            <figcaption></figcaption>
+        </figure>
+
+        <figure class="report-figure">
+            <img src="../../Doc/erreurCORS_devtools.png"
+                 alt="Erreur CORS affichée dans les outils de développement">
+            <figcaption></figcaption>
+        </figure>
+
+        <h3>4.4. Solution mise en œuvre</h3>
+        <p></p>
+
+        <h2>5. Proxy HTTP</h2>
+
+        <h3>5.1. Rôle du proxy</h3>
+        <p></p>
+
+        <h3>5.2. Classe <code>Proxy</code></h3>
+        <p></p>
+
+        <h3>5.3. Classe <code>ProxyHandler</code></h3>
+        <p></p>
+
+        <h3>5.4. Routage des requêtes</h3>
+        <p></p>
+
+        <ul>
+            <li><code>/api/data</code></li>
+            <li><code>/api/bd</code></li>
+        </ul>
+
+        <h3>5.5. Gestion des erreurs</h3>
+        <p></p>
+
+        <h2>6. Services RMI</h2>
+
+        <h3>6.1. Principe de Java RMI</h3>
+        <p></p>
+
+        <h3>6.2. Service Incidents</h3>
+        <p></p>
+
+        <ul>
+            <li><code>InterfaceIncidents</code></li>
+            <li><code>ClientHTTPIncidents</code></li>
+            <li><code>LancerServiceIncidents</code></li>
+        </ul>
+
+        <h3>6.3. Service Base de Données</h3>
+        <p></p>
+
+        <ul>
+            <li><code>ServiceDatabase</code></li>
+            <li><code>LancerServiceDatabase</code></li>
+        </ul>
+
+        <h3>6.4. Communication entre proxy et services</h3>
+        <p></p>
+
+        <h2>7. Base de données Oracle</h2>
+
+        <h3>7.1. Modèle de données</h3>
+        <p></p>
+
+        <figure class="report-figure">
+            <img src="../../Doc/bd.png"
+                 alt="Schéma de la base de données">
+            <figcaption></figcaption>
+        </figure>
+
+        <h3>7.2. Structure relationnelle</h3>
+        <p></p>
+
+        <ul>
+            <li><code>Restaurant</code></li>
+            <li><code>TableRestaurant</code></li>
+            <li><code>Reservation</code></li>
+        </ul>
+
+        <h3>7.3. Accès JDBC</h3>
+        <p></p>
+
+        <h3>7.4. Gestion des réservations</h3>
+        <p></p>
+
+        <h3>7.5. Transactions</h3>
+        <p></p>
+
+        <h2>8. Déploiement</h2>
+
+        <h3>8.1. Préparation de la base Oracle</h3>
+        <p></p>
+
+        <h3>8.2. Compilation Maven</h3>
+        <p></p>
+
+        <h3>8.3. Lancement du registre RMI</h3>
+        <p></p>
+
+        <h3>8.4. Lancement des services</h3>
+        <p></p>
+
+        <h3>8.5. Lancement du proxy</h3>
+        <p></p>
+
+        <h3>8.6. Déploiement du frontend</h3>
+        <p></p>
+
+        <h2>9. Conclusion</h2>
+
+        <h3>9.1. Bilan du projet</h3>
+        <p></p>
+
+        <h3>9.2. Compétences acquises</h3>
+        <p></p>
+
+        <h3>9.3. Améliorations possibles</h3>
+        <p></p>
+
+        <ul>
+            <li>Authentification</li>
+            <li>Gestion avancée des réservations</li>
+            <li>Mise en cache des données</li>
+            <li>Ajout de nouveaux services répartis</li>
+        </ul>
     </article>
 </main>
 
