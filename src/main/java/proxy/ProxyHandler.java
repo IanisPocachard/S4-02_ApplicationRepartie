@@ -156,8 +156,8 @@ class ProxyHandler implements HttpHandler {
             System.out.println("[PROXYHANDLER] telephone = " + telephone);
 
             try {
-              int id = restaurantId.parseInt();
-              int nb = nbPersonnes.parseInt();
+              int id = Integer.parseInt(restaurantId);
+              int nb = Integer.parseInt(nbPersonnes);
               LocalDateTime d = LocalDateTime.parse(date);
 
               String jsonBd = restaurant.reserverTable(id, d, nb, nom, prenom, telephone);
