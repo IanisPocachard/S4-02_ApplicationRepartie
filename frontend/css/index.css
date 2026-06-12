@@ -248,3 +248,45 @@ body {
 	color: white;
 	cursor: pointer;
 }
+
+/* Popup créée par afficherMessage() */
+.modal-message-informatif {
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    background: #fff;
+    border: 2px solid #2563eb;
+    border-radius: 10px;
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+    text-align: center;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.modal-message-informatif h3 {
+    font-size: 18px;
+    color: #111827;
+}
+
+.modal-message-informatif p {
+    color: #374151;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.modal-message-informatif .modal-actions {
+    justify-content: center;
+}
+
+.modal-message-informatif .modal-button {
+    border: 0;
+    border-radius: 6px;
+    padding: 8px 18px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.modal-message-informatif .modal-button:hover {
+    background: #1d4ed8;
+}
