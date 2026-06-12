@@ -109,7 +109,7 @@ public class Database implements ServiceDatabase {
             String nom,
             String prenom,
             String telephone
-    ) {
+    ) throws ReservationImpossibleException {
 
         Connection connection =
                 Database.getInstance(Credentials.USERNAME, Credentials.PASSWORD)
@@ -151,23 +151,17 @@ public class Database implements ServiceDatabase {
 
                     Reservation.create(r, locked.getId());
 
-                    connection.commit();
-
-                    JSONObject response = new JSONObject();
-                    response.put("status", "success");
-                    response.put("reservation", r.toJson());
-
-                    return response.toString();
+                    return r.toJson().toString();
                 }
             }
 
             connection.rollback();
 
-            JSONObject error = new JSONObject();
-            error.put("status", "error");
-            error.put("message", "no_table_available");
-
-            return error.toString();
+            throw new ReservationImpossibleException(
+                    "[RESERVATION] Réservation de " + nom + " " + prenom
+                    + " au restaurant " + restaurant.getNom()
+                    + " et à la date et heure " + date + " impossible."
+            );
 
         } catch (Exception e) {
 
