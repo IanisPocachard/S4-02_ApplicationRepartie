@@ -139,24 +139,120 @@
         <h2>5. Proxy HTTP</h2>
 
         <h3>5.1. Rôle du proxy</h3>
-        <p></p>
+        <p>Le proxy sert de passerelle entre le frontend TypeScript et les services backend Java. Il a deux fonctions principales :</p>
+        <ul>
+            <li>Exposer un serveur HTTP sur le port 8080</li>
+            <li>Faire relais vers des services distants via RMI :</li>
+            <ul>
+                <li> service des incidents</li>
+                <li>service de base de données / réservations</li>
+            </ul>
+        </ul>
+    
 
         <h3>5.2. Classe <code>Proxy</code></h3>
-        <p></p>
+        <p>La classe <code>Proxy</code> s'occupe de lancer le serveur HTTP dès l'instanciation.</p>
+        <p>La classe stocke les services RMI :</p>
+        <ul>
+            <li>pour la gestion des incidents (<code>incident</code>)</li>
+            <li>pour la requêtes vers la base de données (<code>restaurant</code>)</li>
+        </ul>
+        <p>Point important : le serveur HTTP est lancé dans le constructeur, donc le proxy démarre même si les services RMI ne sont pas encore branchés.</p>
 
         <h3>5.3. Classe <code>ProxyHandler</code></h3>
-        <p></p>
+        <p>Cette classe est celle qui s'occupe du routage en lui même. C'est dans celle-ci que la requête envoyé par le client HTTP (navigateur de l'utilisateur) est traité et que les appels RMI necessaires sont effectués</p>
+        <p>Dans le cadre de la résolution de l'erreur CORS, cette classe ajoute les entêtes :</p>
+        <ul>
+            <li>Access-Control-Allow-Origin: *</li>
+            <li>Access-Control-Allow-Methods: GET, POST, OPTIONS</li>
+            <li>Access-Control-Allow-Headers: Content-Type</li>
+        </ul>
+        <p>De la même manière, la méthode <code>OPTION</code> est gérée pour prendre en compte le CORS preflight du navigateur</p>
 
         <h3>5.4. Routage des requêtes</h3>
-        <p></p>
-
+        <p>L'API comporte plusieurs endpoint :</p>
         <ul>
-            <li><code>/api/data</code></li>
-            <li><code>/api/bd</code></li>
+            <li><code>GET /api/bd/restaurants</code></li>
+            <li><code>POST /api/bd/reserver</code></li>
+            <li><code>OPTION /api/bd/reserver</code></li>
+            <li><code>GET /api/incidents</code></li>
         </ul>
 
-        <h3>5.5. Gestion des erreurs</h3>
-        <p></p>
+        <h3>5.4.1 /api/bd/restaurants</h3>
+        <p>Retourne les coordonnées des restaurants.</p>
+        <p>Appelle côté serveur la méthode RMI : <code>restaurant.getCoordonneesRestaurants()</code></p>
+        <h4>Réponse</h4>
+        <ul>
+            <li>200 OK</li>
+            <li>Corps: JSON renvoyé par le service RMI de la base de donnée</li>
+        </ul>
+        <h4>Erreurs possibles</h4>
+        <ul>
+            <li>503 Service Unavailable</li>
+            <ul>
+                <li>si le service RMI de base de données n'est pas enregistré dans le proxy</li>
+                <li>si l'appel RMI échoue à cause d'un problème réseau</li>
+            </ul>
+        </ul>
+
+        <h3>5.4.2 /api/bd/reserver</h3>
+        <p>Cet endpoint permet de créer une réservation dans la base de données</p>
+        <p>Le proxy lit un corps JSON contenant les informations de réservation, puis délègue au service RMI de base de données la tâche de vérifier si la réservation est possible et la création de la réservation.</p>
+        <h4>Corps JSON attendu (exemple)</h4>
+        <pre><code> 
+{
+    "idRestaurant": 12,
+    "date": "2026-06-12T19:30",
+    "nbPersonnes": 4,
+    "nom": "Dupont",
+    "prenom": "Marie",
+    "telephone": "0600000000"
+}
+        </code></pre>
+    <!-- <pre> permet de faire un rendu HTML avec l'indentation écrite comme de le code source donc c'est normal si les accolades n'ont pas d'indentation -->
+
+        <h4>Réponse</h4>
+        <ul>
+            <li>200 OK si la réservation aboutit</li>
+            <li>Corps: JSON renvoyé par le service RMI de la base de donnée</li>
+        </ul>
+        <h4>Erreurs possibles</h4>
+        <ul>
+            <li>503 Service Unavailable</li>
+            <ul>
+                <li>si le service RMI de base de données n'est pas enregistré dans le proxy</li>
+                <li>si l'appel RMI échoue à cause d'un problème réseau</li>
+            </ul>
+            <li>400 Bad request</li>
+            <ul>
+                <li>si les types des parametres POST ne sont pas respectés</li>
+            </ul>
+            <li>401 Unauthorized</li>
+            <ul>
+                <li>si la reservation est imposible parce que le restaurant est déjà plein</li>
+            </ul>
+            <li>500 Internal Server Error</li>
+            <ul>
+                <li>si une erreur non prévue survient</li>
+            </ul>
+        </ul>
+
+
+        <h3>5.4.3 /api/incidents</h3>
+        <p>Cette route permet de contourner l'erreur CORS et de fournir l'API des incidents/travaux au frontend</p>
+        <h4>Réponse</h4>
+        <ul>
+            <li>200 ok</li>
+            <li>Corps: JSON renvoyé par le service RMI qui intéroge l'API des incidents</li>
+        </ul>
+        <h4>Erreurs possibles</h4>
+        <ul>
+            <li>503 Service Unavailable</li>
+            <ul>
+                <li>si le service RMI n'est pas enregistré dans le proxy</li>
+                <li>si l'appel RMI échoue à cause d'un problème réseau</li>
+            </ul>
+        </ul>
 
         <h2>6. Services RMI</h2>
 

@@ -166,27 +166,26 @@ class ProxyHandler implements HttpHandler {
               System.out.println("[PROXYHANDLER] Body POST = " + body);
 
               JSONObject json = new JSONObject(body);
-
-              System.out.println(json);
-
-              // String restaurantId = json.getString("restaurantId");
-              int restaurantId = json.getInt("idRestaurant");
-              String date = json.getString("date");
-              // String nbPersonnes = json.getString("nbPeronnes");
-              int nbPersonnes = json.getInt("nbPersonnes");
-              String nom = json.getString("nom");
-              String prenom = json.getString("prenom");
-              String telephone = json.getString("telephone");
-
-
-              System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
-              System.out.println("[PROXYHANDLER] date = " + date);
-              System.out.println("[PROXYHANDLER] nbPersonnes = " + nbPersonnes);
-              System.out.println("[PROXYHANDLER] nom = " + nom);
-              System.out.println("[PROXYHANDLER] prenom = " + prenom);
-              System.out.println("[PROXYHANDLER] telephone = " + telephone);
-
+              
               try {
+                // String restaurantId = json.getString("restaurantId");
+                int restaurantId = json.getInt("idRestaurant");
+                String date = json.getString("date");
+                // String nbPersonnes = json.getString("nbPeronnes");
+                int nbPersonnes = json.getInt("nbPersonnes");
+                String nom = json.getString("nom");
+                String prenom = json.getString("prenom");
+                String telephone = json.getString("telephone");
+
+
+                System.out.println("[PROXYHANDLER] restaurantId = " + restaurantId);
+                System.out.println("[PROXYHANDLER] date = " + date);
+                System.out.println("[PROXYHANDLER] nbPersonnes = " + nbPersonnes);
+                System.out.println("[PROXYHANDLER] nom = " + nom);
+                System.out.println("[PROXYHANDLER] prenom = " + prenom);
+                System.out.println("[PROXYHANDLER] telephone = " + telephone);
+
+
                 // int id = Integer.parseInt(restaurantId);
                 // int nb = Integer.parseInt(nbPersonnes);
                 LocalDateTime d = LocalDateTime.parse(date);
@@ -202,7 +201,7 @@ class ProxyHandler implements HttpHandler {
                 envoyerReponse(exchange, "paramètre(s) invalide(s) ", 400);
               } catch (ReservationImpossibleException e) {
                 System.out.println("[PROXYHANDLER] reservation impossible : "+e.getMessage());
-                envoyerReponse(exchange, "reservation impossible", 409);
+                envoyerReponse(exchange, "Aucune table disponible", 401);
               } catch (DateTimeParseException e) {
                 System.out.println("[PROXYHANDLER] erreur de convertion de type pour la date : "+e.getMessage());
                 envoyerReponse(exchange, "paramètre date invalide", 400);
