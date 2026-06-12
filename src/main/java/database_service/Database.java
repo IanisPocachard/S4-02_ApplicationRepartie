@@ -151,6 +151,8 @@ public class Database implements ServiceDatabase {
 
                     Reservation.create(r, locked.getId());
 
+                    connection.commit();
+
                     return r.toJson().toString();
                 }
             }
@@ -162,6 +164,8 @@ public class Database implements ServiceDatabase {
                     + " au restaurant " + restaurant.getNom()
                     + " et à la date et heure " + date + " impossible."
             );
+        } catch (ReservationImpossibleException e) {
+            throw e;
 
         } catch (Exception e) {
 

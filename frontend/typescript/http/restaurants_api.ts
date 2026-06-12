@@ -4,7 +4,7 @@
  */
 
 import { PROXY_RESTAURANTS_URL, PROXY_RESERVATION_URL } from "../config/config";
-import type { Restaurant, Reservation, ReservationResponse } from "../types/restaurants";
+import type { Restaurant, Reservation, DetailsReservation } from "../types/restaurants";
 
 export async function fetchRestaurants(): Promise<Restaurant[]> {
 	if (!PROXY_RESTAURANTS_URL) throw new Error("Proxy non configuré, impossible d'accésder aux données des restaurants");
@@ -18,8 +18,7 @@ export async function fetchRestaurants(): Promise<Restaurant[]> {
 }
 
 
-// TODO : A IMPLEMENTER / A VERIFIER
-export async function reserverRestaurant(reservation : Reservation) : Promise<ReservationResponse> {
+export async function reserverRestaurant(reservation : Reservation) : Promise<DetailsReservation> {
 
 	if (!PROXY_RESERVATION_URL) {
 		throw new Error("Proxy non configuré, impossible de faire une réservation");
@@ -47,6 +46,10 @@ export async function reserverRestaurant(reservation : Reservation) : Promise<Re
 			throw new Error(message || "Aucune table disponible pour la réservation demandée");
 		}
 
+		if (reponse.status === 400) {
+			throw new Error(message || "La demande de réservation est invalide");
+		}
+
 		if (reponse.status === 503 || reponse.status === 502) {
 			throw new Error(message || "Le service de réservation est indisponible");
 		}
@@ -55,5 +58,5 @@ export async function reserverRestaurant(reservation : Reservation) : Promise<Re
 	}
 
 	// return await reponse.json() as ReservationResponse;
-	return await reponse.json() as ReservationResponse;
+	return await reponse.json() as DetailsReservation;
 }

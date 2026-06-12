@@ -67,7 +67,7 @@ export function addStationMarkers(
 		if (statut && filtre?.(statut)) continue;
 
 		const velos = statut?.num_bikes_available ?? 0;
-		const marqueur = L.marker([station.lat, station.lon], { icon: icone(velos) })
+		const marqueur = L.marker([station.lat, station.lon], { icon: iconeVelo() })
 			.addTo(map)
 			.bindPopup(popupContenu(station, statut));
 		marqueurs.set(station.station_id, marqueur);
@@ -167,4 +167,8 @@ export function iconeIncident(): L.DivIcon {
  */
 export function iconeRestaurant(): L.DivIcon {
 	return iconePin("#f59e0b", "🍽️");
+}
+
+export function iconeVelo(): L.DivIcon {
+	return iconePin("#22c55e", "🚲");
 }

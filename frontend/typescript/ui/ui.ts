@@ -12,7 +12,7 @@ import { PROXY_INCIDENTS_URL, INCIDENTS_API_URL, PROXY_RESERVATION_URL } from ".
 import { IncidentsResponse } from "../types/incidents";
 import { fetchIncidents } from "../http/incidents_api";
 import { fetchRestaurants, reserverRestaurant } from "../http/restaurants_api";
-import type { Restaurant, Reservation, ReservationResponse } from "../types/restaurants";
+import type { Restaurant, Reservation } from "../types/restaurants";
 
 /**
  * Méthode permettant de filtrer les stations non opérationnelles
@@ -111,14 +111,27 @@ async function ouvrirFormulaireReservation(restaurant: Restaurant): Promise<void
 		};
 
 		try {
-			const reponse = await reserverRestaurant(reservation);
+			const reservationCreee = await reserverRestaurant(reservation);
 
 			modale.remove();
-			afficherMessage("Votre réservation a bien été prise en compte", "Réservation confirmée : " + reponse.reservation?.nom + " " + reponse.reservation?.prenom + " pour " + reponse.reservation?.nbPersonnes + " personnes le " + reponse.reservation?.date);
+
+			afficherMessage(
+				"Votre réservation a bien été prise en compte",
+				`
+				Restaurant : ${reservationCreee.restaurant?.nom}
+				Client : ${reservationCreee.prenomClient} ${reservationCreee.nomClient}
+				Téléphone : ${reservationCreee.numeroTelephone}
+				Date : ${reservationCreee.date}
+				Table pour : ${reservationCreee.nbPersonnes} personnes
+				`
+			);
 
 		} catch (error) {
 			console.error(error);
-			afficherMessage("Réservation impossible", error instanceof Error ? error.message : "Impossible d'envoyer la réservation");
+			afficherMessage(
+				"Réservation impossible",
+				error instanceof Error ? error.message : "Impossible d'envoyer la réservation"
+			);
 		}
 	});
 }
