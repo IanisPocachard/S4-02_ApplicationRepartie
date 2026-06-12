@@ -171,10 +171,13 @@ class ProxyHandler implements HttpHandler {
               envoyerReponse(exchange, "paramètre(s) invalide(s) ", 400);
             } catch (ReservationImpossibleException e) {
               System.out.println("[PROXYHANDLER] reservation impossible : "+e.getMessage());
-              envoyerReponse(exchange, "reservation impossible", 409);
+              envoyerReponse(exchange, "reservation impossible", 409)
+            } catch (DateTimeParseException e) {
+              System.out.println("[PROXYHANDLER] erreur de convertion de type pour la date : "+e.getMessage());
+              envoyerReponse(exchange, "paramètre date invalide", 400);
             } catch (Exception e) {
               System.out.println("[PROXYHANDLER] erreur : "+e.getMessage());
-              envoyerReponse(exchange, "erreur interne", 500);
+              envoyerReponse(exchange, "erreur", 500);
             }
 
           } else {
