@@ -118,7 +118,7 @@ class ProxyHandler implements HttpHandler {
 
         if (restaurant == null) {
           System.out.println("[PROXYHANDLER] Le service RMI pour de gestion de BD n'est pas enregistré au près du proxy");
-          envoyerReponse(exchange, "erreur : le service RMI de base de données n'est pas disponible", 400);
+          envoyerReponse(exchange, "erreur : le service RMI de base de données n'est pas disponible", 503);
         } else {
 
           if (endpoint.startsWith("/restaurants")) {
@@ -128,7 +128,7 @@ class ProxyHandler implements HttpHandler {
               envoyerReponse(exchange, jsonBd, true);
             } catch (RemoteException e) {
               System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les coordonées des restaurants a échoué avec l'erreur : "+e.getMessage());
-              envoyerReponse(exchange, e.getMessage(), 400);
+              envoyerReponse(exchange, "erreur : problème de connexion réseau", 503);
             }
 
           } else if (endpoint.startsWith("/reserver")) {
@@ -140,9 +140,9 @@ class ProxyHandler implements HttpHandler {
 
             JSONObject json = new JSONObject(body);
 
-            int restaurantId = json.getInt("restaurantId");
+            String restaurantId = json.getString("restaurantId");
             String date = json.getString("date");
-            int nbPersonnes = json.getInt("nbPersonnes");
+            String nbPersonnes = json.getString("nbPeronnes");
             String nom = json.getString("nom");
             String prenom = json.getString("prenom");
             String telephone = json.getString("telephone");
@@ -156,22 +156,25 @@ class ProxyHandler implements HttpHandler {
             System.out.println("[PROXYHANDLER] telephone = " + telephone);
 
             try {
+              int id = Integer.parseInt(restaurantId);
+              int nb = Integer.parseInt(nbPersonnes);
               LocalDateTime d = LocalDateTime.parse(date);
 
-              String jsonBd = restaurant.reserverTable(restaurantId, d, nbPersonnes, nom, prenom, telephone);
+              String jsonBd = restaurant.reserverTable(id, d, nb, nom, prenom, telephone);
               envoyerReponse(exchange, jsonBd, true);
 
-            } catch (ReservationImpossibleException e) {
-              System.out.println("[PROXYHANDLER] " + e.getMessage());
             } catch (RemoteException e) {
               System.out.println("[PROXYHANDLER] l'appel RMI pour réserver une place dans un restaurant a échoué avec l'erreur : "+e.getMessage());
-              envoyerReponse(exchange, e.getMessage(), 400);
-            } catch (DateTimeParseException e) {
+              envoyerReponse(exchange, "erreur : problème de connexion réseau", 503);
+            } catch (NumberFormatException  e) {
               System.out.println("[PROXYHANDLER] erreur de convertion de type : "+e.getMessage());
-              envoyerReponse(exchange, e.getMessage(), 400);
+              envoyerReponse(exchange, "paramètre(s) invalide(s) ", 400);
+            } catch (ReservationImpossibleException e) {
+              System.out.println("[PROXYHANDLER] reservation impossible : "+e.getMessage());
+              envoyerReponse(exchange, "reservation impossible", 409)
             } catch (Exception e) {
               System.out.println("[PROXYHANDLER] erreur : "+e.getMessage());
-              envoyerReponse(exchange, e.getMessage(), 400);
+              envoyerReponse(exchange, "erreur interne", 500);
             }
 
           } else {
@@ -187,17 +190,15 @@ class ProxyHandler implements HttpHandler {
 
         if (incidents == null) {
           System.out.println("[PROXYHANDLER] Le service RMI pour de contournement de l'erreur CORS n'est pas enregistré au près du proxy");
-          envoyerReponse(exchange, "erreur : le service RMI pour les données bloquées n'est pas disponible", 400);
+          envoyerReponse(exchange, "erreur : le service RMI pour les données bloquées n'est pas disponible", 503);
         } else {
           try {
-            System.out.println("[TEST] Avant appel RMI pour récupérer les incidents");
             String jsonIncidents = incidents.fetchAPIIncidents();
-            System.out.println("[TEST] Après appel RMI pour récupérer les incidents");
 
             envoyerReponse(exchange, jsonIncidents, true);
           } catch (RemoteException e) {
             System.out.println("[PROXYHANDLER] l'appel RMI pour récupérer les incidents a échoué avec l'erreur : "+e.getMessage());
-            envoyerReponse(exchange, e.getMessage(), 400);
+            envoyerReponse(exchange, "erreur : problème de connexion réseau", 503);
           }
         }
 
