@@ -297,27 +297,82 @@
         <h2>6. Services RMI</h2>
 
         <h3>6.1. Principe de Java RMI</h3>
-        <p></p>
+        <p>
+            Java RMI (Remote Method Invocation) permet à une application Java d'appeler des méthodes
+            exécutées sur une autre machine comme s'il s'agissait d'objets locaux. Dans notre projet,
+            cette technologie est utilisée pour permettre au proxy de communiquer avec les services
+            distants de gestion des restaurants et des incidents, sans que leur implémentation soit
+            accessible par la page web.
+        </p>
 
         <h3>6.2. Service Incidents</h3>
-        <p></p>
+        <p>
+            Le service Incidents a pour rôle de récupérer les données de circulation de la Métropole
+            du Grand Nancy depuis une API externe. Comme cette API ne peut pas être interrogée
+            directement depuis le navigateur à cause des restrictions CORS, elle est appelée par un
+            service Java distant accessible via RMI. Le proxy utilise ensuite ce service pour obtenir
+            les données et les transmettre au client web au format JSON.
+        </p>
 
         <ul>
-            <li><code>InterfaceIncidents</code></li>
-            <li><code>ClientHTTPIncidents</code></li>
-            <li><code>LancerServiceIncidents</code></li>
+            <li>
+                <code>InterfaceIncidents</code> : interface RMI définissant la méthode distante
+                <code>fetchAPIIncidents()</code>, utilisée par le proxy pour récupérer les données
+                d'incidents.
+            </li>
+
+            <li>
+                <code>ClientHTTPIncidents</code> : implémentation du service. Cette classe utilise
+                l'API <code>HttpClient</code> de Java pour envoyer une requête HTTP à l'API des
+                incidents, vérifier le code de réponse et gérer les erreurs réseau avant de renvoyer
+                les données JSON au proxy.
+            </li>
+
+            <li>
+                <code>LancerServiceIncidents</code> : programme de démarrage du service. Il exporte
+                l'objet distant, se connecte au registre RMI puis enregistre automatiquement le
+                service auprès du proxy afin qu'il puisse être utilisé par l'application.
+            </li>
         </ul>
 
         <h3>6.3. Service Base de Données</h3>
-        <p></p>
+        <p>
+            Le service Base de Données permet au proxy d'accéder aux informations stockées dans la
+            base Oracle. Il expose deux fonctionnalités principales : la récupération des
+            coordonnées des restaurants afin de les afficher sur la carte, et la réservation d'une
+            table en enregistrant les informations fournies par l'utilisateur. Les échanges avec le
+            proxy sont réalisés via Java RMI et les réponses sont renvoyées au format JSON.
+        </p>
 
         <ul>
-            <li><code>ServiceDatabase</code></li>
-            <li><code>LancerServiceDatabase</code></li>
+            <li>
+                <code>ServiceDatabase</code> : interface RMI définissant les méthodes distantes
+                permettant de récupérer les restaurants et d'effectuer une réservation de table.
+            </li>
+
+            <li>
+                <code>LancerServiceDatabase</code> : programme de démarrage du service. Il initialise
+                la base de données, charge les données des restaurants et des tables depuis les
+                fichiers JSON, exporte le service RMI puis l'enregistre auprès du proxy afin qu'il
+                puisse être utilisé par l'application web.
+            </li>
         </ul>
 
         <h3>6.4. Communication entre proxy et services</h3>
-        <p></p>
+        <p>
+            Le proxy constitue le point d'entrée unique de l'application côté serveur. Les services
+            Incidents et Base de Données s'enregistrent auprès de lui via le registre RMI lors de
+            leur démarrage. Lorsqu'une requête HTTP est reçue depuis le navigateur, le proxy analyse
+            l'URL demandée puis invoque la méthode distante correspondante sur le service concerné.
+        </p>
+
+        <p>
+            Les appels concernant les restaurants sont transmis au service de base de données, tandis
+            que les demandes relatives aux incidents sont redirigées vers le service de récupération
+            des données externes. Le proxy joue ainsi le rôle d'intermédiaire entre le client web et
+            les services RMI, tout en centralisant la gestion des requêtes HTTP, des réponses JSON et
+            des erreurs réseau.
+        </p>
 
         <h2>7. Base de données Oracle</h2>
 
@@ -331,59 +386,149 @@
         </figure>
 
         <h3>7.2. Structure relationnelle</h3>
-        <p></p>
+        <p>
+            La base de données est organisée autour de trois tables principales. La table
+            <code>Restaurant</code> stocke les informations des restaurants, notamment leur nom,
+            leur adresse et leurs coordonnées GPS. La table <code>TableRestaurant</code> représente
+            les tables disponibles dans chaque restaurant avec leur capacité. Enfin, la table
+            <code>Reservation</code> enregistre les réservations effectuées par les utilisateurs.
+        </p>
 
         <ul>
-            <li><code>Restaurant</code></li>
-            <li><code>TableRestaurant</code></li>
-            <li><code>Reservation</code></li>
+            <li><code>Restaurant</code> : contient les restaurants affichés sur la carte.</li>
+            <li><code>TableRestaurant</code> : contient les tables associées aux restaurants.</li>
+            <li><code>Reservation</code> : contient les réservations des clients.</li>
         </ul>
 
         <h3>7.3. Accès JDBC</h3>
-        <p></p>
+        <p>
+            L'accès à la base Oracle se fait avec JDBC dans la classe <code>Database</code>. Cette
+            classe ouvre une connexion à la base, charge le pilote Oracle et centralise les opérations
+            principales comme le chargement des restaurants, des tables et la récupération des
+            coordonnées au format JSON.
+        </p>
 
         <h3>7.4. Gestion des réservations</h3>
-        <p></p>
+        <p>
+            Lorsqu'une réservation est demandée, le service recherche d'abord le restaurant concerné,
+            puis sélectionne les tables ayant une capacité suffisante. Il vérifie ensuite si une table
+            est disponible à la date demandée avant de créer une nouvelle réservation contenant les
+            informations du client, le nombre de personnes et la table attribuée.
+        </p>
 
         <h3>7.5. Transactions</h3>
-        <p></p>
+        <p>
+            Les réservations sont gérées dans une transaction afin de garantir la cohérence des
+            données. L'auto-commit est désactivé, puis un <code>commit</code> est effectué si la
+            réservation réussit. En cas d'erreur ou d'indisponibilité, un <code>rollback</code> est
+            réalisé. Un verrou <code>FOR UPDATE</code> est aussi utilisé pour éviter qu'une même table
+            soit réservée simultanément par plusieurs utilisateurs.
+        </p>
 
         <h2>8. Déploiement</h2>
 
         <h3>8.1. Préparation de la base Oracle</h3>
-        <p></p>
+        <p>
+            Avant de lancer le projet, il faut créer la classe
+            <code>src/main/java/database_service/Credentials.java</code> afin d'y renseigner les
+            identifiants Oracle utilisés pour la connexion à la base de données.
+        </p>
+
+        <pre><code>public class Credentials {
+    public static final String USERNAME = "";
+    public static final String PASSWORD = "";
+}</code></pre>
+
+        <p>
+            La base est ensuite créée et enrichie grâce au fichier <code>database.sql</code>, qui
+            contient les tables nécessaires au fonctionnement de l'application.
+        </p>
 
         <h3>8.2. Compilation Maven</h3>
-        <p></p>
+        <p>
+            La partie Java du projet est compilée avec Maven. La commande
+            <code>mvn clean compile</code> permet de compiler les sources et de vérifier que les
+            dépendances nécessaires sont correctement prises en compte.
+        </p>
+
+        <p>
+            Pour tester la partie base de données, il est aussi possible d'utiliser la commande
+            <code>mvn exec:java</code>, qui lance la classe de test
+            <code>database_service.Client</code>.
+        </p>
 
         <h3>8.3. Lancement du registre RMI</h3>
-        <p></p>
+        <p>
+            Le registre RMI doit être lancé afin de permettre aux services distants de s'enregistrer
+            et d'être retrouvés par le proxy. Il est utilisé comme point central pour publier les
+            objets RMI du projet.
+        </p>
 
         <h3>8.4. Lancement des services</h3>
-        <p></p>
+        <p>
+            Les services RMI sont lancés séparément. Le service de base de données permet d'accéder
+            aux restaurants et aux réservations, tandis que le service incidents interroge l'API
+            externe des incidents de circulation. Chaque service s'enregistre auprès du proxy pour
+            pouvoir être appelé à distance.
+        </p>
 
         <h3>8.5. Lancement du proxy</h3>
-        <p></p>
+        <p>
+            Le proxy HTTP sert de passerelle entre le frontend et les services RMI. Il reçoit les
+            requêtes du navigateur, les redirige vers le service correspondant, puis renvoie les
+            données au format JSON.
+        </p>
 
         <h3>8.6. Déploiement du frontend</h3>
-        <p></p>
+        <p>
+            Le frontend se trouve dans le dossier <code>frontend</code>. Il utilise TypeScript,
+            esbuild, Handlebars et Leaflet pour afficher l'application dans le navigateur et gérer
+            la carte interactive.
+        </p>
+
+        <pre><code>npm install
+npm install leaflet</code></pre>
+
+        <p>
+            La structure principale du frontend est organisée autour de plusieurs dossiers :
+            <code>index.html</code> pour la page d'entrée, <code>typescript/index.ts</code> pour le
+            point d'entrée TypeScript, <code>ui</code> pour l'orchestration de l'affichage,
+            <code>map</code> pour la logique de carte, <code>http</code> pour les appels aux API,
+            <code>types</code> pour les types partagés et <code>config</code> pour la configuration
+            du projet.
+        </p>
 
         <h2>9. Conclusion</h2>
 
         <h3>9.1. Bilan du projet</h3>
-        <p></p>
+        <p>
+            Cette SAÉ nous a permis de concevoir une application répartie complète combinant une
+            interface web, des services RMI, un proxy HTTP et une base de données Oracle. Les
+            objectifs fixés ont été atteints avec l'affichage des stations VéloStan, des restaurants,
+            des incidents de circulation ainsi que la mise en place d'un système de réservation.
+        </p>
 
         <h3>9.2. Compétences acquises</h3>
-        <p></p>
+        <p>
+            Ce projet nous a permis d'utiliser de façon concrète les notions abordées dans les
+            différentes matières : architecture logicielle, développement web, accès aux bases
+            de données, communication réseau et programmation répartie. Nous avons également acquis
+            de l'expérience sur Java RMI, JDBC, les API web, la gestion des erreurs réseau et le
+            déploiement d'une application sur plusieurs machines.
+        </p>
 
         <h3>9.3. Améliorations possibles</h3>
-        <p></p>
+        <p>
+            Plusieurs évolutions pourraient être envisagées afin d'améliorer l'application et son
+            expérience utilisateur.
+        </p>
 
         <ul>
-            <li>Authentification</li>
-            <li>Gestion avancée des réservations</li>
-            <li>Mise en cache des données</li>
-            <li>Ajout de nouveaux services répartis</li>
+            <li>Ajout d'un système d'authentification pour les utilisateurs.</li>
+            <li>Gestion des annulations et modifications de réservations.</li>
+            <li>Amélioration de l'interface utilisateur et des formulaires.</li>
+            <li>Ajout de nouvelles sources de données ouvertes sur la métropole.</li>
+            <li>Déploiement automatisé des différents services.</li>
         </ul>
     </article>
 </main>

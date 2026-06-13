@@ -29,9 +29,9 @@ npm install leaflet
 - `frontend/typescript/config/` : configuration et constantes
 
 ## Setup Projet :
-- Créer la classe `src/java/database_service.database_service.Credentials.java`, avec le code suivant à compléter :
+- Créer la classe `src/java/database_service/Credentials.java`, avec le code suivant à compléter :
 ```java
-public class database_service.database_service.Credentials {
+public class Credentials {
     public static final String USERNAME = "", PASSWORD = "";
 }
 ```
