@@ -43,7 +43,7 @@ public class ClientHTTPIncidents implements InterfaceIncidents {
 
             HttpResponse<String> response = client.send(request, BodyHandlers.ofString()); // BodyHandlers.ofString() --> indique que le corps de la réponse HTTP doit être traité comme une chaîne de caractères. | client.send(request, BodyHandlers.ofString()) --> envoie la requête HTTP et attend la réponse du serveur, qui est ensuite traitée pour extraire le corps de la réponse sous forme de chaîne de caractères, cet appel est bloquant donc le thread qui exécute cette méthode sera suspendu jusqu'à ce que la réponse soit reçue ou qu'une exception soit levée par exemple en cas de problème de réseau ou de délai d'attente dépassé
             System.out.println("[Client HTTP] Envoie de la requête : " + request);
-            System.out.println("[Client HTTP] Réception de la réponse : " + response);
+            System.out.println("[Client HTTP] Réception de la réponse (de l'API Waze) : " + response);
             int statusCode = response.statusCode();
             System.out.println("Code HTTP : " + statusCode);
 
@@ -53,13 +53,14 @@ public class ClientHTTPIncidents implements InterfaceIncidents {
                 throw new RemoteException("Erreur HTTP : " + statusCode); // TODO : redemander à Ambroise si c'est ok pour lui que lui catch le RemoteException et qu'il renvoie lui un json vers le navigateur avec un message d'erreur pour que le navigateur puisse afficher un message d'erreur à l'utilisateur
             }
 
+            System.out.println("[Client HTTP] Envoi de la réponse suivante au proxy : " + response.body());
             return response.body(); // renvoie le corps de la réponse HTTP sous forme de chaîne de caractères, donc le xcontenu de l'API de traffic
 
         } catch (IOException e) {
-            System.err.println("Erreur réseau : " + e.getMessage());
+            System.err.println("[Client HTTP] Erreur réseau : " + e.getMessage());
             throw new RemoteException("Erreur réseau pendant l'appel à l'API incidents", e);
         } catch (InterruptedException e) {
-            System.err.println("Requête interrompue");
+            System.err.println("[Client HTTP] Requête interrompue");
             Thread.currentThread().interrupt();
             throw new RemoteException("Requête interrompue", e);
         }

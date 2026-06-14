@@ -20,11 +20,17 @@ export async function fetchIncidents(urlApi : string, urlProxy : string) : Promi
 
         console.warn("Erreur lors de la récupération des incidents, tentative de contournement via le proxy : ", error);
         
-        const reponseDuProxy = await fetch(urlProxy);
+        let reponseDuProxy : Response;
+
+        try {
+            reponseDuProxy = await fetch(urlProxy);
+        } catch (error) {
+            console.error("[API_INCIDENTS] Impossible de contacter le proxy pour récupérer les incidents : ", error);
+            throw new Error("Impossible de contacter le proxy pour récupérer les incidents");
+        }
 
         if (!reponseDuProxy.ok) {
             console.warn("[API_INCIDENTS] Erreur lors de la récupération des incidents via le proxy : " + reponseDuProxy.status);
-            throw new Error("Le service des incidents est indisponible");
         }
 
         return await reponseDuProxy.json() as IncidentsResponse;
