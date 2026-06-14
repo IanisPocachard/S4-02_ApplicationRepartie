@@ -137,6 +137,29 @@
                 ces erreurs dans des blocs <code>try/catch</code> et les affiche dans une popup informative.
             </p>
 
+        <h3>3.4. Gestion des erreurs côté frontend</h3>
+            <p>
+                Les erreurs réseau sont traitées dans les modules du dossier <code>http</code>. Lorsqu'une réponse
+                HTTP est reçue, le frontend peut analyser son code avec <code>response.status</code>. Par exemple,
+                un code <code>200</code> indique une réponse valide, un code <code>400</code> une requête incorrecte,
+                un code <code>409</code> une réservation impossible, et les codes <code>502</code> ou <code>503</code>
+                un problème avec un service distant.
+            </p>
+
+            <p>
+                Dans certains cas, aucune réponse HTTP n'est reçue. C'est le cas lorsque le proxy est éteint,
+                inaccessible ou mal configuré. Le navigateur lève alors une erreur technique comme
+                <code>Failed to fetch</code>. Cette erreur est interceptée dans les fonctions HTTP afin d'afficher
+                un message plus clair à l'utilisateur, par exemple que le proxy est impossible à joindre.
+            </p>
+
+            <p>
+                Le module <code>ui.ts</code> récupère ensuite ces erreurs dans des blocs <code>try/catch</code> et les
+                affiche dans une modale informative. Cela permet de ne pas interrompre toute l'application lorsqu'une
+                source de données échoue : par exemple, les stations VéloStan peuvent rester affichées même si les
+                restaurants ou les incidents ne sont pas disponibles.
+            </p>
+
         <h2>4. Gestion des données externes</h2>
 
         <h3>4.1. API VéloStan</h3>
@@ -158,12 +181,17 @@
 
         <h3>4.3. Problématique CORS</h3>
             <p>
-                L'API des incidents ne pouvait pas être appelée directement depuis le navigateur à cause
-                de la politique CORS. Elle empêche une page web d'appeler librement une ressource située sur un autre domaine si le serveur distant n'autorise
-                pas explicitement cette origine avec l'en-tête <code>Access-Control-Allow-Origin</code>. Lorsqu'un navigateur bloque une requête CORS, le frontend ne reçoit pas un
-                code HTTP exploitable : l'appel <code>fetch</code> échoue directement. Pour contourner ce problème,
-                le frontend tente d'abord d'appeler l'API directement, puis utilise le proxy HTTP en solution de repli
-                si l'appel direct échoue.
+                CORS (Cross-Origin Resource Sharing) est une politique de sécurité appliquée par les navigateurs.
+                Elle empêche une page web d'appeler librement une ressource située sur un autre domaine si le serveur
+                distant n'autorise pas explicitement cette origine avec l'en-tête
+                <code>Access-Control-Allow-Origin</code>.
+            </p>
+
+            <p>
+                Dans notre cas, l'API des incidents ne fournit pas les en-têtes nécessaires pour être appelée
+                directement depuis notre frontend. Le navigateur bloque donc la requête avant que le frontend puisse
+                exploiter une réponse HTTP classique. L'erreur ne vient pas de TypeScript ni de Leaflet, mais du
+                modèle de sécurité du navigateur.
             </p>
 
         <figure class="report-figure">
@@ -182,7 +210,7 @@
             <p>
                 La solution repose sur un client HTTP Java exposé comme service RMI. Ce service implémente
                 l'interface <code>InterfaceIncidents</code> et fournit une méthode permettant de récupérer les données
-                de l'API incidents. Au démarrage, le service incidents récupère le service RMI du proxy (ce qui s'apparent à un service central dans notre architecture) en passant par l'annuaire puis s'enregistre
+                de l'API incidents. Au démarrage, le service incidents récupère le service RMI du proxy en passant par l'annuaire puis s'enregistre
                 auprès de lui grâce à la méthode dédiée. Le proxy peut ensuite appeler ce service lorsqu'il reçoit une requête HTTP sur le endpoint <code>/api/incidents</code>.
             </p>
 
