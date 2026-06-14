@@ -19,6 +19,9 @@
 
         <p class="report-meta"></p>
 
+        <h3>Lien vers le repo Github :</h3>
+        <p><a href="https://github.com/IanisPocachard/S4-02_ApplicationRepartie">https://github.com/IanisPocachard/S4-02_ApplicationRepartie</a></p>
+
         <h2>Membres du groupe :</h2>
         <ul>
             <li>Ambroise Gilbert</li>
@@ -137,15 +140,27 @@
         <h2>4. Gestion des données externes</h2>
 
         <h3>4.1. API VéloStan</h3>
-        <p></p>
+            <p>
+                L'API VéloStan est utilisée pour récupérer les stations de vélos disponibles sur Nancy.
+                Deux types de données sont exploités : les informations statiques des stations, comme leur
+                nom, leur adresse, leur capacité et leurs coordonnées GPS, puis les informations dynamiques,
+                comme le nombre de vélos et de places disponibles. Ces deux réponses sont reliées côté
+                frontend grâce au champ <code>station_id</code>.
+            </p>
 
         <h3>4.2. API Incidents</h3>
-        <p></p>
+            <p>
+                L'API incidents fournit un document JSON contenant les perturbations et travaux en cours.
+                Chaque incident contient notamment un type, une description, une période de validité (starttime et endtime) et une
+                localisation. La localisation est fournie dans le champ <code>polyline</code>, qui est découpé
+                côté frontend afin de récupérer les coordonnées et d'afficher un marqueur sur la carte Leaflet.
+            </p>
 
         <h3>4.3. Problématique CORS</h3>
             <p>
                 L'API des incidents ne pouvait pas être appelée directement depuis le navigateur à cause
-                de la politique CORS. Lorsqu'un navigateur bloque une requête CORS, le frontend ne reçoit pas un
+                de la politique CORS. Elle empêche une page web d'appeler librement une ressource située sur un autre domaine si le serveur distant n'autorise
+                pas explicitement cette origine avec l'en-tête <code>Access-Control-Allow-Origin</code>. Lorsqu'un navigateur bloque une requête CORS, le frontend ne reçoit pas un
                 code HTTP exploitable : l'appel <code>fetch</code> échoue directement. Pour contourner ce problème,
                 le frontend tente d'abord d'appeler l'API directement, puis utilise le proxy HTTP en solution de repli
                 si l'appel direct échoue.
@@ -482,7 +497,7 @@
         <h3>8.6. Déploiement du frontend</h3>
         <p>
             Le frontend se trouve dans le dossier <code>frontend</code>. Il utilise TypeScript,
-            esbuild, Handlebars et Leaflet pour afficher l'application dans le navigateur et gérer
+            esbuild et Leaflet pour afficher l'application dans le navigateur et gérer
             la carte interactive.
         </p>
 
