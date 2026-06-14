@@ -45,7 +45,7 @@ export async function reserverRestaurant(reservation : Reservation) : Promise<De
 		throw new Error("Proxy non configuré, impossible de faire une réservation");
 	}
 
-	console.log("[API RESTAURANTS] Envoi de la demande de réservation suivante au proxy : " + reservation.toString());
+	console.log("[API RESTAURANTS] Envoi de la demande de réservation suivante au proxy : " + JSON.stringify(reservation));
 
 	let reponse : Response;
 

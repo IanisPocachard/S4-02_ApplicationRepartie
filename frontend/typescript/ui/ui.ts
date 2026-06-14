@@ -150,7 +150,7 @@ function afficherMessage(titre: string, message: string, erreur : boolean): void
 			<p>${message}</p>
 			<div class="modal-actions">
 				<button type="button" class="modal-button">OK</button>
-			 </div>
+			</div>
 		</div>
 	`
 

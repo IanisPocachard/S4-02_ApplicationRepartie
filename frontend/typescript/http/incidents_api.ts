@@ -30,7 +30,8 @@ export async function fetchIncidents(urlApi : string, urlProxy : string) : Promi
         }
 
         if (!reponseDuProxy.ok) {
-            console.warn("[API_INCIDENTS] Erreur lors de la récupération des incidents via le proxy : " + reponseDuProxy.status);
+            console.warn("[API_INCIDENTS] Erreur proxy : " + reponseDuProxy.status, await reponseDuProxy.text());
+            throw new Error("Impossible de récupérer les incidents depuis le proxy");
         }
 
         return await reponseDuProxy.json() as IncidentsResponse;

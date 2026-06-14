@@ -5,14 +5,16 @@
 import {VeloApiIndexResponse, VeloStationInformationResponse, VeloStationStatusResponse } from "../types/velo";
 import { VELO_API_INDEX_URL, VELO_API_STATION_INFORMATION_URL, VELO_API_STATION_STATUS_URL } from "../config/config";
 
-
-/**
- * Récupère les informations de l'annuaire de l'api velib
- * *@throws {error} Si le requete http echoue
- * @returns Une promesse contenant les différents points d'accès de l'api
- */
+// Récupère les informations de l'annuaire de l'api velib
 export async function fetchVeloApiIndex(): Promise<VeloApiIndexResponse> {
-	const response = await fetch(VELO_API_INDEX_URL);
+	let response : Response;
+
+	try {
+		response = await fetch(VELO_API_INDEX_URL);
+	} catch (error) {
+		console.error("[API_VELO] Impossible de contacter l'API Velostanlib pour récupérer les informations de l'index : ", error);
+		throw new Error("Impossible de contacter l'API Velostanlib pour récupérer les informations de l'annuaire");
+	}
 
 	if (!response.ok) {
 		throw new Error(`Erreur HTTP ${response.status} en essayant de fetch l'URL suivante : ${VELO_API_INDEX_URL}`);
@@ -22,13 +24,16 @@ export async function fetchVeloApiIndex(): Promise<VeloApiIndexResponse> {
 }
 
 
-/**
- * Récupère les informations statiques de toutes les stations (nom, position GPS, capacité).
- * *@throws {error} Si la requete HTTP échoue
- * @returns Une promesse contenant les données des stations
- */
+// Récupère les informations statiques de toutes les stations (nom, position GPS, capacité)
 export async function fetchStationInformation(): Promise<VeloStationInformationResponse> {
-	const response = await fetch(VELO_API_STATION_INFORMATION_URL);
+	let response : Response;
+
+	try {
+		response = await fetch(VELO_API_STATION_INFORMATION_URL);
+	} catch (error) {
+		console.error("[API_VELO] Impossible de contacter l'API Velostanlib pour récupérer les informations des stations : ", error);
+		throw new Error("Impossible de contacter l'API Velostanlib pour récupérer les informations des stations");
+	}
 
 	if (!response.ok) {
 		throw new Error(`Erreur HTTP ${response.status} en essayant de fetch l'URL suivante : ${VELO_API_STATION_INFORMATION_URL}`);
@@ -39,11 +44,16 @@ export async function fetchStationInformation(): Promise<VeloStationInformationR
 
 /**
  * Récupère les status des stations
- * *@throws {error} Si la requete http échoue
- * @returns Une promesse contenant les status des stations
  */
 export async function fetchStationStatus(): Promise<VeloStationStatusResponse> {
-	const response = await fetch(VELO_API_STATION_STATUS_URL);
+	let response : Response;
+
+	try {
+		response = await fetch(VELO_API_STATION_STATUS_URL);
+	} catch (error) {
+		console.error("[API_VELO] Impossible de contacter l'API Velostanlib pour récupérer les status des stations : ", error);
+		throw new Error("Impossible de contacter l'API Velostanlib pour récupérer les status des stations");
+	}
 
 	if (!response.ok) {
 		throw new Error(`Erreur HTTP ${response.status} en essayant de fetch l'URL suivante : ${VELO_API_STATION_STATUS_URL}`);
