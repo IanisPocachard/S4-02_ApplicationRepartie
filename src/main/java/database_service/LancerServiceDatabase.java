@@ -12,10 +12,11 @@ import proxy.InterfaceProxy;
 public class LancerServiceDatabase {
     public static void main(String[] args) {
 
-        String usage = "Usage: java LancerServiceDatabase [restaurant_json_file] [tables_json_file]";
+        String usage = "Usage: java LancerServiceDatabase [restaurant_json_file] [tables_json_file] [ip_proxy]";
 
         String jsonFileRestaurant = "restaurants.json";
         String jsonFileTables = "tables_restaurant.json";
+        String ipProxy = args.length > 2 ? args[2] : "localhost";
 
         if (args.length == 0) System.out.println(usage);
         if (args.length > 0) {
@@ -51,7 +52,7 @@ public class LancerServiceDatabase {
 
         try {
             ServiceDatabase rd = (ServiceDatabase) UnicastRemoteObject.exportObject((ServiceDatabase) database, 0);
-            Registry registry = LocateRegistry.getRegistry(1099);
+            Registry registry = LocateRegistry.getRegistry(ipProxy, 1099);
 
             // Lier le service Database au proxy
             InterfaceProxy serviceProxy = (InterfaceProxy) registry.lookup("proxy");

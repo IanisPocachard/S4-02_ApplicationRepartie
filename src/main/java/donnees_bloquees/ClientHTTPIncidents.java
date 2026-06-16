@@ -27,6 +27,7 @@ public class ClientHTTPIncidents implements InterfaceIncidents {
                     .version(Version.HTTP_1_1) // permet de forcer l'utilisation de HTTP/1.1
                     .followRedirects(Redirect.NORMAL) // permet de suivre les redirections HTTP automatiquement
                     .connectTimeout(Duration.ofSeconds(20)) // définit un délai d'attente pour la connexion de 20 sec
+                    .proxy(ProxySelector.of(new InetSocketAddress("www-cache", 3128))) // configure un proxy pour les requêtes HTTP comme on va lancer sur un ordi de l'IUT
                     .build(); // permet de construire le client HTTP avec les paramètres spécifiés juste au dessus
 
 
